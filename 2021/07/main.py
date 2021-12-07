@@ -11,18 +11,33 @@ from tqdm import tqdm
 
 
 def fuel_task01(positions: np.ndarray, final_position: int) -> int:
-    """Metric for task 01."""
+    """Metric for task 01.
+
+    :param positions: All crab positions
+    :param final_position: Final position of all crabs
+    :returns: Fuel consumption for task 01
+    """
     return np.abs(positions - final_position).sum()
 
 
 def fuel_task02(positions: np.ndarray, final_position: int) -> int:
-    """Metric for task 02."""
+    """Metric for task 02.
+
+    :param positions: All crab positions
+    :param final_position: Final position of all crabs
+    :returns: Fuel consumption for task 02
+    """
     dist = np.abs(positions - final_position)
     return (dist*(dist+1)//2).sum()
 
 
 def optimize_fuel(positions: np.ndarray, metric: Callable) -> Tuple[int, int]:
-    """Optimize fuel for both tasks depending on metric."""
+    """Optimize fuel for both tasks depending on metric.
+
+    :param positions: The crab positions
+    :param metric: Function to compute fuel consumption
+    :returns: (minimal_fuel_consumption, corresponding_final_position)
+    """
     left = positions.min()
     right = positions.max()
 
@@ -38,12 +53,20 @@ def optimize_fuel(positions: np.ndarray, metric: Callable) -> Tuple[int, int]:
 
 
 def task01(positions: np.ndarray) -> Tuple[int, int]:
-    """Solves task 01."""
+    """Solves task 01.
+
+    :param positions: Initial crab positions:
+    :returns: (minimal_fuel_consumption, corresponding_final_position)
+    """
     return optimize_fuel(positions, fuel_task01)
 
 
 def task02(positions: np.ndarray) -> Tuple[int, int]:
-    """Solves task 02."""
+    """Solves task 02.
+
+    :param positions: Initial crab positions:
+    :returns: (minimal_fuel_consumption, corresponding_final_position)
+    """
     return optimize_fuel(positions, fuel_task02)
 
 
