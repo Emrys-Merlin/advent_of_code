@@ -93,7 +93,8 @@ def main(path: Union[str, Path]):
     print('Task 01')
     fuel, position = task01(positions)
     print(f'{fuel=}')
-    print(f'{position=}\n')
+    print(f'{position=}')
+    print(f'{np.median(positions)=}\n')
 
     print('Task 02')
     fuel, position = task02(positions)
