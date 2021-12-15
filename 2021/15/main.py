@@ -1,14 +1,13 @@
-"""Solutions on day 07.
+"""Solutions on day 15.
 
-https://adventofcode.com/2021/day/7
+https://adventofcode.com/2021/day/15
 """
 from pathlib import Path
 from typing import Tuple, Union, Iterator, Dict
 
 import click
-from tqdm import tqdm
 import numpy as np
-from heapq import heapify, heappush, heappop
+from heapq import heappush, heappop
 
 
 def neighbors(point: Tuple[int], shp: Tuple[int]) -> Iterator[Tuple[int, int]]:
@@ -73,10 +72,9 @@ def build_larger_grid(grid: np.ndarray, n: int = 5) -> np.ndarray:
 @click.command()
 @click.argument('path', type=click.Path())
 def main(path: Union[str, Path]):
-    """Solve day 07 tasks.
+    """Solve day 15 tasks.
 
-    Read input from PATH and and apply solutions
-    to day 07 tasks. Prints the solution.
+    Read input from PATH and prints the solution.
     \f
 
     :param path: Path to the input file
