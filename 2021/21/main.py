@@ -2,7 +2,7 @@
 
 https://adventofcode.com/2021/day/21
 """
-from collections import namedtuple
+from collections import OrderedDict, namedtuple
 from pathlib import Path
 from typing import List, Optional, Tuple, Union
 
@@ -114,10 +114,9 @@ class DiracDiceDeterministic:
 GameState = namedtuple(
     'GameState',
     [
-        'active',  # which player is active
-        'positions',  # player positions
-        'scores',  # player scores
-        'n_universes',  # n universes with this state
+        'active',
+        'positions',
+        'scores',
     ]
 )
 
@@ -146,27 +145,26 @@ class DiracDiceQuantum:
         self.goal = goal
         self.n_sides = n_sides
 
+
     def outcome(self) -> Tuple[int, int]:
         """Compute outcome in all universes.
-
-        Caution: Not the fastest solution. On my machine
-        it ran in approximately 35 seconds.
 
         :returns: Tuples with number of winning universes for player
         1 and player 2.
         """
         wins = [0]*len(self.start_positions)
 
-        stack = [
-            GameState(
-                active=0,
-                positions=self.start_positions,
-                scores=tuple([0]*len(self.start_positions)),
-                n_universes=1)
-        ]
+        state = GameState(
+            active=0,
+            positions=tuple(self.start_positions),
+            scores=tuple([0]*len(self.start_positions))
+        )
+        queue = OrderedDict()
+        queue[state] = 1
 
-        while len(stack):
-            state = stack.pop()
+        while len(queue):
+            state, n_universes = queue.popitem(last=False)
+
             player = state.active
             old_pos = state.positions[player]
             old_score = state.scores[player]
@@ -176,7 +174,7 @@ class DiracDiceQuantum:
                 score = old_score + pos + 1
 
                 if score >= self.goal:
-                    wins[player] += state.n_universes*n
+                    wins[player] += n_universes*n
                     continue
 
                 positions = tuple([
@@ -191,11 +189,11 @@ class DiracDiceQuantum:
                     active=(1 - player),
                     positions=positions,
                     scores=scores,
-                    n_universes=state.n_universes*n
                 )
-                stack.append(new_state)
+                queue[new_state] = queue.get(new_state, 0) + n_universes*n
 
         return wins
+
 
 
 @click.command()
@@ -230,7 +228,7 @@ def main(path: Union[str, Path]):
     print('\nTask 02')
     game_q = DiracDiceQuantum(start_positions)
     wins = game_q.outcome()
-    # print(f'{wins=}')
+    print(f'{wins=}')
     n_winning_universes = max(wins)
     print(f'{n_winning_universes=}')
 
