@@ -9,7 +9,7 @@ from collections import namedtuple
 import click
 from math import prod
 
-Packet = namedtuple('Packet', ['version', 'type_id', 'payload'])
+Packet = namedtuple("Packet", ["version", "type_id", "payload"])
 
 
 def hex2bin(hex: str) -> str:
@@ -21,7 +21,7 @@ def hex2bin(hex: str) -> str:
     res = str(bin(int(hex, 16)))[2:]
     # Add missing leading zeros
     residue = (4 - (len(res) % 4)) % 4
-    return '0'*residue + res
+    return "0" * residue + res
 
 
 def parse_packets(packet: str) -> Tuple[Packet, int, int, str]:
@@ -76,7 +76,7 @@ def parse_literal(packet: str) -> Tuple[int, str]:
     - Parsed number
     - String representation of unparsed packet rest
     """
-    number = ''
+    number = ""
     while True:
         chunk, packet = packet[:5], packet[5:]
         number += chunk[1:]
@@ -94,7 +94,7 @@ OPERATOR_DICT = {
     3: max,
     5: lambda x: int(x[0] > x[1]),
     6: lambda x: int(x[0] < x[1]),
-    7: lambda x: int(x[0] == x[1])
+    7: lambda x: int(x[0] == x[1]),
 }
 
 
@@ -110,7 +110,7 @@ def apply_operator(type_id: int, operands: List[int]) -> int:
 
 
 @click.command()
-@click.argument('path', type=click.Path())
+@click.argument("path", type=click.Path())
 def main(path: Union[str, Path]):
     """Solve day 16 tasks.
 
@@ -121,25 +121,25 @@ def main(path: Union[str, Path]):
     """
     path = Path(path)
 
-    with open(path, 'r') as f:
+    with open(path, "r") as f:
         hex = f.readline().strip()
 
-    print(f'{hex=}')
+    print(f"{hex=}")
     packet = hex2bin(hex)
     # print(f'{packet=}')
-    print(f'{len(packet)=}')
+    print(f"{len(packet)=}")
 
     packet_tree, total_version, result, rest = parse_packets(packet)
     # Print whole packet tree and the unparsed packet rest for debug purposes
     # print(packet_tree)
     # print(f'{rest=}')
 
-    print('\nTask 01')
-    print(f'{total_version=}')
+    print("\nTask 01")
+    print(f"{total_version=}")
 
-    print('\nTask 02')
-    print(f'{result=}')
+    print("\nTask 02")
+    print(f"{result=}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

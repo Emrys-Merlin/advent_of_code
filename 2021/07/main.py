@@ -28,7 +28,7 @@ def fuel_task02(positions: np.ndarray, final_position: int) -> int:
     :returns: Fuel consumption for task 02
     """
     dist = np.abs(positions - final_position)
-    return (dist*(dist+1)//2).sum()
+    return (dist * (dist + 1) // 2).sum()
 
 
 def optimize_fuel(positions: np.ndarray, metric: Callable) -> Tuple[int, int]:
@@ -43,7 +43,7 @@ def optimize_fuel(positions: np.ndarray, metric: Callable) -> Tuple[int, int]:
 
     fuel = np.inf
     minimal_pos = -1
-    for pos in tqdm(range(left, right+1)):
+    for pos in tqdm(range(left, right + 1)):
         new_fuel = metric(positions, pos)
         if new_fuel < fuel:
             fuel = new_fuel
@@ -71,7 +71,7 @@ def task02(positions: np.ndarray) -> Tuple[int, int]:
 
 
 @click.command()
-@click.argument('path', type=click.Path())
+@click.argument("path", type=click.Path())
 def main(path: Union[str, Path]):
     """Solve day 07 tasks.
 
@@ -82,25 +82,25 @@ def main(path: Union[str, Path]):
     :param path: Path to the input file
     """
     path = Path(path)
-    with open(path, 'r') as f:
+    with open(path, "r") as f:
         line = f.readline()
 
-    positions = np.array(line.strip().split(','), dtype='int')
-    print(f'{len(positions)=}')
-    print(f'{positions.min()=}')
-    print(f'{positions.max()=}\n')
+    positions = np.array(line.strip().split(","), dtype="int")
+    print(f"{len(positions)=}")
+    print(f"{positions.min()=}")
+    print(f"{positions.max()=}\n")
 
-    print('Task 01')
+    print("Task 01")
     fuel, position = task01(positions)
-    print(f'{fuel=}')
-    print(f'{position=}')
-    print(f'{np.median(positions)=}\n')
+    print(f"{fuel=}")
+    print(f"{position=}")
+    print(f"{np.median(positions)=}\n")
 
-    print('Task 02')
+    print("Task 02")
     fuel, position = task02(positions)
-    print(f'{fuel=}')
-    print(f'{position=}')
+    print(f"{fuel=}")
+    print(f"{position=}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

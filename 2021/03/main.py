@@ -10,7 +10,7 @@ def binary_to_int(a: np.ndarray) -> int:
     """Transform binary array to (decimal) int."""
     res = 0
     for c in a:
-        res = 2*res + c
+        res = 2 * res + c
 
     return res
 
@@ -37,7 +37,7 @@ def sieve(matrix: np.ndarray, invert: bool = False) -> np.ndarray:
         if len(matrix) == 1:
             break
         keep_ones = matrix[:, i].mean() >= 0.5
-        keep_ones = (1 - invert)*keep_ones + invert*(1 - keep_ones)
+        keep_ones = (1 - invert) * keep_ones + invert * (1 - keep_ones)
 
         print(keep_ones)
         mask = matrix[:, i] == keep_ones
@@ -57,7 +57,7 @@ def task02(matrix: np.ndarray) -> Tuple[int, int]:
 
 
 @click.command()
-@click.argument('path', type=click.Path())
+@click.argument("path", type=click.Path())
 def main(path: Union[str, Path]):
     """Solve day 03 tasks.
 
@@ -70,24 +70,21 @@ def main(path: Union[str, Path]):
     path = Path(path)
 
     matrix = []
-    with open(path, 'r') as f:
+    with open(path, "r") as f:
         for line in f.readlines():
-            line = [
-                int(char)
-                for char in line.strip()
-            ]
+            line = [int(char) for char in line.strip()]
             matrix.append(line)
 
     matrix = np.array(matrix)
 
     gamma, epsilon = task01(matrix)
-    print(f'{gamma=}\n{epsilon=}')
-    print(f'Product: {gamma*epsilon}')
+    print(f"{gamma=}\n{epsilon=}")
+    print(f"Product: {gamma*epsilon}")
 
     ogr, csr = task02(matrix)
-    print(f'{ogr=}\n{csr=}')
-    print(f'Product: {ogr*csr}')
+    print(f"{ogr=}\n{csr=}")
+    print(f"Product: {ogr*csr}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

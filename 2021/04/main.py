@@ -21,10 +21,9 @@ def task01(boards: np.ndarray, order: List[int]) -> Tuple[int, int]:
     for draw in tqdm(order):
         mask[boards == draw] = 1
 
-        winner = (
-            (mask.sum(axis=1) == mask.shape[1]).max(axis=-1) |
-            (mask.sum(axis=2) == mask.shape[2]).max(axis=-1)
-        )
+        winner = (mask.sum(axis=1) == mask.shape[1]).max(axis=-1) | (
+            mask.sum(axis=2) == mask.shape[2]
+        ).max(axis=-1)
 
         if any(winner):
             break
@@ -49,8 +48,8 @@ def task02(boards: np.ndarray, order: List[int]) -> Tuple[int, int]:
     for draw in tqdm(reversed(order), total=len(order)):
         masks[boards == draw] = 0
         looser = ~(
-            (masks.sum(axis=1) == masks.shape[1]).max(axis=-1) |
-            (masks.sum(axis=2) == masks.shape[2]).max(axis=-1)
+            (masks.sum(axis=1) == masks.shape[1]).max(axis=-1)
+            | (masks.sum(axis=2) == masks.shape[2]).max(axis=-1)
         )
 
         if any(looser):
@@ -68,7 +67,7 @@ def task02(boards: np.ndarray, order: List[int]) -> Tuple[int, int]:
 
 
 @click.command()
-@click.argument('path', type=click.Path())
+@click.argument("path", type=click.Path())
 def main(path: Union[str, Path]):
     """Solve day 04 tasks.
 
@@ -82,40 +81,34 @@ def main(path: Union[str, Path]):
 
     boards = []
     board = []
-    with open(path, 'r') as f:
+    with open(path, "r") as f:
         for i, line in tqdm(enumerate(f.readlines())):
             line = line.strip()
 
             if i == 0:
-                order = [
-                    int(char)
-                    for char in line.split(',')
-                ]
+                order = [int(char) for char in line.split(",")]
                 continue
 
-            if (len(line) == 0):
+            if len(line) == 0:
                 if len(board) == 5:
                     boards.append(board)
                     board = []
                 continue
 
-            board.append([
-                int(char)
-                for char in line.split()
-            ])
+            board.append([int(char) for char in line.split()])
 
     boards = np.array(boards)
-    print(f'Bingo boards: {boards.shape}')
-    print(f'Draws: {len(order)}')
+    print(f"Bingo boards: {boards.shape}")
+    print(f"Draws: {len(order)}")
 
     unmarked, draw = task01(boards, order)
-    print(f'{unmarked=}\n{draw=}')
-    print(f'Product: {unmarked*draw}')
+    print(f"{unmarked=}\n{draw=}")
+    print(f"Product: {unmarked*draw}")
 
     unmarked, draw = task02(boards, order)
-    print(f'{unmarked=}\n{draw=}')
-    print(f'Product: {unmarked*draw}')
+    print(f"{unmarked=}\n{draw=}")
+    print(f"Product: {unmarked*draw}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

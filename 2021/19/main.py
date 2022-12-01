@@ -20,24 +20,20 @@ class Scanner:
         """
         self.beacons = beacons
         self.beacon_signature = defaultdict(set)
-        self.scanner_locations = np.zeros((1, 3), dtype='int')
+        self.scanner_locations = np.zeros((1, 3), dtype="int")
 
         for i in range(len(beacons) - 1):
             beacon1 = beacons[i]
-            for j in range(i+1, len(beacons)):
+            for j in range(i + 1, len(beacons)):
                 beacon2 = beacons[j]
 
                 delta = beacon2 - beacon1
                 delta = tuple(sorted(np.abs(delta).tolist()))
 
-                self.beacon_signature[i].add(
-                    delta
-                )
-                self.beacon_signature[j].add(
-                    delta
-                )
+                self.beacon_signature[i].add(delta)
+                self.beacon_signature[j].add(delta)
 
-    def intersection(self, scanner: 'Scanner') -> Dict[int, int]:
+    def intersection(self, scanner: "Scanner") -> Dict[int, int]:
         """Compute beacon intersection between two scanners.
 
         :param scanner: Other scanner
@@ -59,7 +55,7 @@ class Scanner:
 
         return matches
 
-    def extend(self, scanner: 'Scanner', matches: Dict[int, int]):
+    def extend(self, scanner: "Scanner", matches: Dict[int, int]):
         """Extend scanner by beacon list of second scanner.
 
         Compute coordinate transformation and extend first
@@ -96,18 +92,13 @@ class Scanner:
                 delta = beacon2 - beacon1
                 delta = tuple(sorted(np.abs(delta).tolist()))
 
-                self.beacon_signature[i].add(
-                    delta
-                )
-                self.beacon_signature[j].add(
-                    delta
-                )
+                self.beacon_signature[i].add(delta)
+                self.beacon_signature[j].add(delta)
 
         # Add new scanner locations in correct coordinate system
         locations = Scanner._transform_coords(trafo, scanner.scanner_locations)
         self.scanner_locations = np.concatenate(
-            (self.scanner_locations, locations),
-            axis=0
+            (self.scanner_locations, locations), axis=0
         )
 
     @staticmethod
@@ -130,9 +121,8 @@ class Scanner:
         :param x: Input coordinates
         :param y: Transformed coordinates
         """
-        x = np.concatenate((x, np.ones((len(x), 1))),
-                           axis=-1)
-        return np.round(x@trafo).astype(int)
+        x = np.concatenate((x, np.ones((len(x), 1))), axis=-1)
+        return np.round(x @ trafo).astype(int)
 
     def __len__(self) -> int:
         """Return number of beacons."""
@@ -144,7 +134,7 @@ class Scanner:
         n = len(self.scanner_locations)
         for i in range(n - 1):
             loc1 = self.scanner_locations[i]
-            for j in range(i+1, n):
+            for j in range(i + 1, n):
                 loc2 = self.scanner_locations[j]
 
                 dist = np.abs(loc1 - loc2).sum()
@@ -154,7 +144,7 @@ class Scanner:
         return max_dist
 
     @staticmethod
-    def solve_tasks(scanners: List['Scanner']) -> Tuple[int, int]:
+    def solve_tasks(scanners: List["Scanner"]) -> Tuple[int, int]:
         """Compute number of beacons and scanner distance.
 
         :param scanners: List of all scanners
@@ -178,7 +168,7 @@ class Scanner:
 
 
 @click.command()
-@click.argument('path', type=click.Path())
+@click.argument("path", type=click.Path())
 def main(path: Union[str, Path]):
     """Solve day 19 tasks.
 
@@ -191,37 +181,34 @@ def main(path: Union[str, Path]):
 
     scanners = []
     beacons = []
-    with open(path, 'r') as f:
+    with open(path, "r") as f:
         for line in f.readlines():
             line = line.strip()
             if len(line) == 0:
-                beacons = np.array(beacons, dtype='int')
+                beacons = np.array(beacons, dtype="int")
                 scanner = Scanner(beacons)
                 scanners.append(scanner)
                 beacons = []
                 continue
 
-            if not line.startswith('---'):
-                beacons.append([
-                    int(number)
-                    for number in line.split(',')
-                ])
+            if not line.startswith("---"):
+                beacons.append([int(number) for number in line.split(",")])
 
     if len(beacons) != 0:
-        beacons = np.array(beacons, dtype='int')
+        beacons = np.array(beacons, dtype="int")
         scanner = Scanner(beacons)
         scanners.append(scanner)
 
-    print(f'{len(scanners)=}')
+    print(f"{len(scanners)=}")
 
     n_beacons, max_scanner_distance = Scanner.solve_tasks(scanners)
 
-    print('\nTask 01')
-    print(f'{n_beacons=}')
+    print("\nTask 01")
+    print(f"{n_beacons=}")
 
-    print('\nTask 02')
-    print(f'{max_scanner_distance=}')
+    print("\nTask 02")
+    print(f"{max_scanner_distance=}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

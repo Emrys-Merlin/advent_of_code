@@ -19,7 +19,7 @@ def task01(y_min: int) -> int:
     :returns: Maximum probe height
     """
     v_y_max = abs(y_min) - 1
-    max_height = v_y_max*(v_y_max + 1)//2
+    max_height = v_y_max * (v_y_max + 1) // 2
     return max_height
 
 
@@ -31,14 +31,14 @@ def task02(x_range: Tuple[int, int], y_range: Tuple[int, int]) -> int:
     :returns: Number of valid starting directions
     """
     # Rough bounds for velocities
-    v_x_min = ceil(-0.5 + sqrt(0.25 + 2*x_range[0]))
+    v_x_min = ceil(-0.5 + sqrt(0.25 + 2 * x_range[0]))
     v_x_max = x_range[1]
     v_y_min = y_range[0]
     v_y_max = abs(y_range[0]) - 1
 
     # Brute force time...
     n = 0
-    for v_x in range(v_x_min, v_x_max+1):
+    for v_x in range(v_x_min, v_x_max + 1):
         for v_y in range(v_y_min, v_y_max + 1):
 
             v = v_x
@@ -58,7 +58,7 @@ def task02(x_range: Tuple[int, int], y_range: Tuple[int, int]) -> int:
 
 
 @click.command()
-@click.argument('path', type=click.Path())
+@click.argument("path", type=click.Path())
 def main(path: Union[str, Path]):
     """Solve day 17 tasks.
 
@@ -69,34 +69,28 @@ def main(path: Union[str, Path]):
     """
     path = Path(path)
 
-    with open(path, 'r') as f:
+    with open(path, "r") as f:
         line = f.readline().strip()
 
     splits = line.split()
     x = splits[-2][2:-1]
     y = splits[-1][2:]
 
-    x_range = [
-        int(number)
-        for number in x.split('..')
-    ]
-    y_range = [
-        int(number)
-        for number in y.split('..')
-    ]
+    x_range = [int(number) for number in x.split("..")]
+    y_range = [int(number) for number in y.split("..")]
 
-    print(f'{x_range=}')
-    print(f'{y_range=}')
+    print(f"{x_range=}")
+    print(f"{y_range=}")
 
-    print('\nTask 01')
+    print("\nTask 01")
     max_height = task01(y_range[0])
 
-    print(f'{max_height=}')
+    print(f"{max_height=}")
 
-    print('\nTask02')
+    print("\nTask02")
     n_start_directions = task02(x_range, y_range)
-    print(f'{n_start_directions=}')
+    print(f"{n_start_directions=}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

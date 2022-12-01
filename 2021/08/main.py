@@ -18,7 +18,7 @@ DIGIT_DICT = dict(
     abdefg=6,
     acf=7,
     abcdefg=8,
-    abcdfg=9
+    abcdfg=9,
 )
 
 
@@ -40,7 +40,7 @@ def decode_segments(digits: List[str]) -> Dict[str, str]:
     # using 1 and 7 identify a
     a = seven.difference(one).pop()
     segment_dict = dict()
-    segment_dict[a] = 'a'
+    segment_dict[a] = "a"
 
     # using 4 and 1 identify candidates for b and d
     b_or_d = four.difference(one)
@@ -56,47 +56,40 @@ def decode_segments(digits: List[str]) -> Dict[str, str]:
     # Using 5 and 1 identify f and c
     f = five.intersection(one).pop()
     c = one.difference([f]).pop()
-    segment_dict[f] = 'f'
-    segment_dict[c] = 'c'
+    segment_dict[f] = "f"
+    segment_dict[c] = "c"
 
     # Since 2 and 3 differ only by replacing a single
     # segment, which does not affect b or d
     # we can use either one to identify b and d
     d = two_or_three[0].intersection(b_or_d).pop()
     b = b_or_d.difference([d]).pop()
-    segment_dict[b] = 'b'
-    segment_dict[d] = 'd'
+    segment_dict[b] = "b"
+    segment_dict[d] = "d"
 
     # Only e and g are left. Extract the candidates
-    e_or_g = set('abcdefg').difference(segment_dict.keys())
+    e_or_g = set("abcdefg").difference(segment_dict.keys())
 
     # 5 only contains a g. Use this to identfy e and g.
     g = five.intersection(e_or_g).pop()
     e = e_or_g.difference([g]).pop()
 
-    segment_dict[e] = 'e'
-    segment_dict[g] = 'g'
+    segment_dict[e] = "e"
+    segment_dict[g] = "g"
     return segment_dict
 
 
 def transform_digit(digit: List[str], segment_dict: Dict[str, str]) -> int:
     """Transform scrambled digit to int."""
-    digit = ''.join(sorted([
-        segment_dict[segment]
-        for segment in digit
-    ]))
+    digit = "".join(sorted([segment_dict[segment] for segment in digit]))
     return DIGIT_DICT[digit]
 
 
 def transform_digits(
-        digits: List[List[str]],
-        segment_dict: Dict[str, str]
+    digits: List[List[str]], segment_dict: Dict[str, str]
 ) -> List[int]:
     """Transform list of scrambled digit to list of int."""
-    return [
-        transform_digit(digit, segment_dict)
-        for digit in digits
-    ]
+    return [transform_digit(digit, segment_dict) for digit in digits]
 
 
 def digits_to_number(digits: List[int]) -> int:
@@ -104,13 +97,13 @@ def digits_to_number(digits: List[int]) -> int:
     res = 0
 
     for digit in digits:
-        res = 10*res + digit
+        res = 10 * res + digit
 
     return res
 
 
 @click.command()
-@click.argument('path', type=click.Path())
+@click.argument("path", type=click.Path())
 def main(path: Union[str, Path]):
     """Solve day 08 tasks.
 
@@ -123,9 +116,9 @@ def main(path: Union[str, Path]):
 
     counter = Counter()
     numbers = []
-    with open(path, 'r') as f:
+    with open(path, "r") as f:
         for line in f.readlines():
-            digits, output = line.split('|')
+            digits, output = line.split("|")
             digits = digits.strip().split()
             output = output.strip().split()
 
@@ -134,18 +127,15 @@ def main(path: Union[str, Path]):
             counter.update(digits)
             numbers.append(digits_to_number(digits))
 
-    print('Total digit count:')
+    print("Total digit count:")
     print(counter)
 
     easy_digits = [1, 4, 7, 8]
-    task01_result = sum([
-        counter[i]
-        for i in easy_digits
-    ])
-    print(f'Task 01: {task01_result}')
+    task01_result = sum([counter[i] for i in easy_digits])
+    print(f"Task 01: {task01_result}")
 
-    print(f'Task 02: {sum(numbers)}')
+    print(f"Task 02: {sum(numbers)}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

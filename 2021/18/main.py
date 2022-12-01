@@ -35,17 +35,17 @@ class Number(object):
         return [self.left.tolist(), self.right.tolist()]
 
     @classmethod
-    def from_string(cls: 'Number', number: str) -> 'Number':
+    def from_string(cls: "Number", number: str) -> "Number":
         """Initialize a snail number from string.
 
         Based on https://www.py4u.net/discuss/174025
 
         :param number: String representation of number
         """
-        left = r'[[]'
-        right = r'[]]'
-        sep = r'[,]'
-        tokens = re.split(f'({left}|{right}|{sep})', number)
+        left = r"[[]"
+        right = r"[]]"
+        sep = r"[,]"
+        tokens = re.split(f"({left}|{right}|{sep})", number)
         stack = [[]]
         for token in tokens:
             if not token or re.match(sep, token):
@@ -56,18 +56,18 @@ class Number(object):
             elif re.match(right, token):
                 stack.pop()
                 if not stack:
-                    raise ValueError('error: opening bracket is missing')
+                    raise ValueError("error: opening bracket is missing")
             else:
                 stack[-1].append(int(token))
         if len(stack) > 1:
             print(stack)
-            raise ValueError('error: closing bracket is missing')
+            raise ValueError("error: closing bracket is missing")
 
         number = cls(stack.pop()[0])
         number._reduce()
         return number
 
-    def __add__(self, number: 'Number') -> 'Number':
+    def __add__(self, number: "Number") -> "Number":
         """Add two snail numbers.
 
         Caution: This operation changes both self and number.
@@ -111,13 +111,13 @@ class Number(object):
                 self.value = 0
                 return True, left, right
 
-        has_exploded, left, right = self.left._explode(depth+1)
+        has_exploded, left, right = self.left._explode(depth + 1)
 
         if has_exploded:
             self.right._add_leftmost(right)
             return True, left, 0
 
-        has_exploded, left, right = self.right._explode(depth+1)
+        has_exploded, left, right = self.right._explode(depth + 1)
 
         if has_exploded:
             self.left._add_rightmost(left)
@@ -156,7 +156,7 @@ class Number(object):
             if self.value < 10:
                 return False
 
-            half = self.value//2
+            half = self.value // 2
             self.left = Number(half)
             self.right = Number(self.value - half)
             self.value = None
@@ -178,11 +178,11 @@ class Number(object):
         if self.value is not None:
             return self.value
 
-        return 3*self.left.magnitude() + 2*self.right.magnitude()
+        return 3 * self.left.magnitude() + 2 * self.right.magnitude()
 
 
 @click.command()
-@click.argument('path', type=click.Path())
+@click.argument("path", type=click.Path())
 def main(path: Union[str, Path]):
     """Solve day 18 tasks.
 
@@ -195,7 +195,7 @@ def main(path: Union[str, Path]):
 
     result = None
     numbers = []
-    with open(path, 'r') as f:
+    with open(path, "r") as f:
         for line in f.readlines():
             line = line.strip()
             number = Number.from_string(line)
@@ -207,11 +207,11 @@ def main(path: Union[str, Path]):
 
             result += number
 
-    print('\nTask 01')
-    print(f'{result=}')
-    print(f'{result.magnitude()=}')
+    print("\nTask 01")
+    print(f"{result=}")
+    print(f"{result.magnitude()=}")
 
-    print('\nTask 02')
+    print("\nTask 02")
     max_magnitude = -1
     for i in range(len(numbers)):
         for j in range(len(numbers)):
@@ -222,8 +222,8 @@ def main(path: Union[str, Path]):
             if mag > max_magnitude:
                 max_magnitude = mag
 
-    print(f'{max_magnitude=}')
+    print(f"{max_magnitude=}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

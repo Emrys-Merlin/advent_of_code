@@ -16,7 +16,7 @@ def tasks(neighbors: Dict[str, List[str]]) -> Tuple[int, int]:
     :returns: Tuple with number of paths with small caves visited only once and
     the additional paths if a single small cave is allowed to be visited twice.
     """
-    stack = [(['start'], False)]
+    stack = [(["start"], False)]
 
     counter = 0
     counter_two_small_nodes = 0
@@ -25,7 +25,7 @@ def tasks(neighbors: Dict[str, List[str]]) -> Tuple[int, int]:
 
         current_node = path[-1]
 
-        if current_node == 'end':
+        if current_node == "end":
             if small_node_visited_twice:
                 counter_two_small_nodes += 1
             else:
@@ -33,21 +33,25 @@ def tasks(neighbors: Dict[str, List[str]]) -> Tuple[int, int]:
             continue
 
         for node in neighbors[current_node]:
-            if node == 'start':
+            if node == "start":
                 continue
 
             this_small_node_already_visited = node.islower() and node in path
             if this_small_node_already_visited and small_node_visited_twice:
                 continue
 
-            stack.append((path + [node], small_node_visited_twice
-                          or this_small_node_already_visited))
+            stack.append(
+                (
+                    path + [node],
+                    small_node_visited_twice or this_small_node_already_visited,
+                )
+            )
 
     return counter, counter_two_small_nodes
 
 
 @click.command()
-@click.argument('path', type=click.Path())
+@click.argument("path", type=click.Path())
 def main(path: Union[str, Path]):
     """Solve day 12 tasks.
 
@@ -59,23 +63,23 @@ def main(path: Union[str, Path]):
     path = Path(path)
 
     neighbors = defaultdict(list)
-    with open(path, 'r') as f:
+    with open(path, "r") as f:
         for line in f.readlines():
-            node1, node2 = line.strip().split('-')
+            node1, node2 = line.strip().split("-")
             neighbors[node1].append(node2)
             neighbors[node2].append(node1)
 
-    print(f'Number of nodes: {len(neighbors)}')
+    print(f"Number of nodes: {len(neighbors)}")
 
     n_paths, n_paths_second = tasks(neighbors)
 
-    print('\nTask01')
-    print(f'{n_paths=}')
+    print("\nTask01")
+    print(f"{n_paths=}")
 
-    print('\nTask02')
+    print("\nTask02")
     n_total = n_paths + n_paths_second
-    print(f'{n_total=}')
+    print(f"{n_total=}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

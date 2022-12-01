@@ -14,11 +14,11 @@ def neighbors(point: Tuple[int], shp: Tuple[int]) -> Iterator[Tuple[int, int]]:
     """Iterate over all valide neigbhors of a point."""
     for k in [-1, 1]:
         i, j = point
-        if (i+k >= 0) and (i+k < shp[0]):
-            yield (i+k, j)
+        if (i + k >= 0) and (i + k < shp[0]):
+            yield (i + k, j)
 
-        if (j+k >= 0) and (j+k < shp[1]):
-            yield (i, j+k)
+        if (j + k >= 0) and (j + k < shp[1]):
+            yield (i, j + k)
 
 
 def dijkstra(grid: np.ndarray) -> Tuple[int, Dict]:
@@ -30,7 +30,7 @@ def dijkstra(grid: np.ndarray) -> Tuple[int, Dict]:
     :returns: risk score
     """
     start = (0, 0)
-    end = (grid.shape[0]-1, grid.shape[1]-1)
+    end = (grid.shape[0] - 1, grid.shape[1] - 1)
 
     visited = set()
     distance = {start: 0}
@@ -70,7 +70,7 @@ def build_larger_grid(grid: np.ndarray, n: int = 5) -> np.ndarray:
 
 
 @click.command()
-@click.argument('path', type=click.Path())
+@click.argument("path", type=click.Path())
 def main(path: Union[str, Path]):
     """Solve day 15 tasks.
 
@@ -82,25 +82,22 @@ def main(path: Union[str, Path]):
     path = Path(path)
 
     grid = []
-    with open(path, 'r') as f:
+    with open(path, "r") as f:
         for line in f.readlines():
-            grid.append([
-                int(c)
-                for c in line.strip()
-            ])
+            grid.append([int(c) for c in line.strip()])
 
-    grid = np.array(grid, dtype='int')
-    print(f'{grid.shape=}')
+    grid = np.array(grid, dtype="int")
+    print(f"{grid.shape=}")
 
-    print('\nTask 01')
+    print("\nTask 01")
     score = dijkstra(grid)
-    print(f'{score=}')
+    print(f"{score=}")
 
-    print('\nTask02')
+    print("\nTask02")
     large_grid = build_larger_grid(grid)
     score = dijkstra(large_grid)
-    print(f'{score=}')
+    print(f"{score=}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

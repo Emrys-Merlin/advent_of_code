@@ -7,26 +7,11 @@ from typing import Tuple, Union
 
 import click
 
-POINTS_01 = {
-    ')': 3,
-    ']': 57,
-    '}': 1197,
-    '>': 25137
-}
+POINTS_01 = {")": 3, "]": 57, "}": 1197, ">": 25137}
 
-POINTS_02 = {
-    '(': 1,
-    '[': 2,
-    '{': 3,
-    '<': 4
-}
+POINTS_02 = {"(": 1, "[": 2, "{": 3, "<": 4}
 
-MAPPING = {
-    ')': '(',
-    ']': '[',
-    '}': '{',
-    '>': '<'
-}
+MAPPING = {")": "(", "]": "[", "}": "{", ">": "<"}
 
 
 def analyze_line(line: str) -> Tuple[int, int]:
@@ -37,8 +22,8 @@ def analyze_line(line: str) -> Tuple[int, int]:
     score of an incomplete line (or 0)
     """
     stack = []
-    opening_brackets = {'(', '[', '{', '<'}
-    closing_brackets = {')', ']', '}', '>'}
+    opening_brackets = {"(", "[", "{", "<"}
+    closing_brackets = {")", "]", "}", ">"}
 
     for c in line:
         if c in opening_brackets:
@@ -53,13 +38,13 @@ def analyze_line(line: str) -> Tuple[int, int]:
     score = 0
     while len(stack) != 0:
         opening = stack.pop()
-        score = 5*score + POINTS_02[opening]
+        score = 5 * score + POINTS_02[opening]
 
     return 0, score
 
 
 @click.command()
-@click.argument('path', type=click.Path())
+@click.argument("path", type=click.Path())
 def main(path: Union[str, Path]):
     """Solve day 10 tasks.
 
@@ -72,21 +57,21 @@ def main(path: Union[str, Path]):
 
     points = 0
     scores = []
-    with open(path, 'r') as f:
+    with open(path, "r") as f:
         for line in f.readlines():
             line_points, score = analyze_line(line)
             points += line_points
             if score != 0:
                 scores.append(score)
 
-    print('Task 01')
-    print(f'{points=}\n')
+    print("Task 01")
+    print(f"{points=}\n")
 
-    print('Task 02')
+    print("Task 02")
     mid = len(scores) // 2
     final_score = sorted(scores)[mid]
-    print(f'{final_score=}')
+    print(f"{final_score=}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

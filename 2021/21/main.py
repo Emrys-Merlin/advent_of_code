@@ -11,13 +11,12 @@ import click
 
 class DiracDiceDeterministic:
     """Implement the game dirac dice with deterministic die."""
-    def __init__(self, start_positions: List[int],
-                 goal: int = 1000, n_sides: int = 100):
+
+    def __init__(
+        self, start_positions: List[int], goal: int = 1000, n_sides: int = 100
+    ):
         """Initialize dirac dice game."""
-        self.start_positions = tuple(
-            pos - 1
-            for pos in start_positions
-        )
+        self.start_positions = tuple(pos - 1 for pos in start_positions)
         self.goal = goal
         self.n_sides = n_sides
 
@@ -43,16 +42,14 @@ class DiracDiceDeterministic:
         n_dice = 0
         for player, n in enumerate(ns):
             n_played = n_rounds - (player_idx < player)
-            n_dice += 3*n_played
+            n_dice += 3 * n_played
             if n > n_played:
                 scores[player] = self._score_at_round(player, n_played)
 
         return n_dice, scores
 
     def _rounds_to_win(
-            self,
-            player: int,
-            max_rounds: Optional[int] = None
+        self, player: int, max_rounds: Optional[int] = None
     ) -> Tuple[int, int]:
         """Compute rounds for player to win.
 
@@ -64,14 +61,14 @@ class DiracDiceDeterministic:
         :returns: number of rounds to win (or max_rounds) and the final score
         """
         pos = self.start_positions[player]
-        offset = 1 + player*3
+        offset = 1 + player * 3
         res = 0
-        step = len(self.start_positions)*3
+        step = len(self.start_positions) * 3
         counter = 0
         while True:
-            increment = 3*(offset + 1)
+            increment = 3 * (offset + 1)
             if offset == self.n_sides - 1:
-                increment = 2*self.n_sides
+                increment = 2 * self.n_sides
             elif offset == 0:
                 increment = self.n_sides + 3
 
@@ -80,8 +77,7 @@ class DiracDiceDeterministic:
             counter += 1
             offset = (offset + step) % self.n_sides
 
-            if res >= self.goal or (max_rounds is not None and
-                                    counter >= max_rounds):
+            if res >= self.goal or (max_rounds is not None and counter >= max_rounds):
                 break
 
         return counter, res
@@ -94,14 +90,14 @@ class DiracDiceDeterministic:
         :returns: score
         """
         pos = self.start_positions[player]
-        offset = 1 + player*3
+        offset = 1 + player * 3
         res = 0
-        step = len(self.start_positions)*3
+        step = len(self.start_positions) * 3
 
         for _ in range(n_rounds):
-            increment = 3*(offset + 1)
+            increment = 3 * (offset + 1)
             if offset == self.n_sides - 1:
-                increment = 2*self.n_sides
+                increment = 2 * self.n_sides
             elif offset == 0:
                 increment = self.n_sides + 3
             pos = (pos + increment) % 10
@@ -112,39 +108,26 @@ class DiracDiceDeterministic:
 
 
 GameState = namedtuple(
-    'GameState',
+    "GameState",
     [
-        'active',
-        'positions',
-        'scores',
-    ]
+        "active",
+        "positions",
+        "scores",
+    ],
 )
 
 # Sum of 3 sided dice roll and number of occurences
-ROLLS = {
-    3: 1,
-    4: 3,
-    5: 6,
-    6: 7,
-    7: 6,
-    8: 3,
-    9: 1
-
-}
+ROLLS = {3: 1, 4: 3, 5: 6, 6: 7, 7: 6, 8: 3, 9: 1}
 
 
 class DiracDiceQuantum:
     """Implement the game dirac dice with quantum die."""
-    def __init__(self, start_positions: List[int],
-                 goal: int = 21, n_sides: int = 3):
+
+    def __init__(self, start_positions: List[int], goal: int = 21, n_sides: int = 3):
         """Initialize game."""
-        self.start_positions = tuple(
-            pos - 1
-            for pos in start_positions
-        )
+        self.start_positions = tuple(pos - 1 for pos in start_positions)
         self.goal = goal
         self.n_sides = n_sides
-
 
     def outcome(self) -> Tuple[int, int]:
         """Compute outcome in all universes.
@@ -152,12 +135,12 @@ class DiracDiceQuantum:
         :returns: Tuples with number of winning universes for player
         1 and player 2.
         """
-        wins = [0]*len(self.start_positions)
+        wins = [0] * len(self.start_positions)
 
         state = GameState(
             active=0,
             positions=tuple(self.start_positions),
-            scores=tuple([0]*len(self.start_positions))
+            scores=tuple([0] * len(self.start_positions)),
         )
         queue = OrderedDict()
         queue[state] = 1
@@ -174,30 +157,33 @@ class DiracDiceQuantum:
                 score = old_score + pos + 1
 
                 if score >= self.goal:
-                    wins[player] += n_universes*n
+                    wins[player] += n_universes * n
                     continue
 
-                positions = tuple([
-                    (1 - player)*pos + player*state.positions[0],
-                    player*pos + (1 - player)*state.positions[1]
-                ])
-                scores = tuple([
-                    (1 - player)*score + player*state.scores[0],
-                    player*score + (1 - player)*state.scores[1]
-                ])
+                positions = tuple(
+                    [
+                        (1 - player) * pos + player * state.positions[0],
+                        player * pos + (1 - player) * state.positions[1],
+                    ]
+                )
+                scores = tuple(
+                    [
+                        (1 - player) * score + player * state.scores[0],
+                        player * score + (1 - player) * state.scores[1],
+                    ]
+                )
                 new_state = GameState(
                     active=(1 - player),
                     positions=positions,
                     scores=scores,
                 )
-                queue[new_state] = queue.get(new_state, 0) + n_universes*n
+                queue[new_state] = queue.get(new_state, 0) + n_universes * n
 
         return wins
 
 
-
 @click.command()
-@click.argument('path', type=click.Path())
+@click.argument("path", type=click.Path())
 def main(path: Union[str, Path]):
     """Solve day 21 tasks.
 
@@ -208,30 +194,27 @@ def main(path: Union[str, Path]):
     """
     path = Path(path)
 
-    with open(path, 'r') as f:
-        start_positions = [
-            int(line.strip().split()[-1])
-            for line in f.readlines()
-        ]
+    with open(path, "r") as f:
+        start_positions = [int(line.strip().split()[-1]) for line in f.readlines()]
 
-    print(f'{len(start_positions)}')
-    print(f'{start_positions}')
+    print(f"{len(start_positions)}")
+    print(f"{start_positions}")
 
-    print('\nTask 01')
+    print("\nTask 01")
     game = DiracDiceDeterministic(start_positions)
     n_dice, scores = game.outcome()
-    print(f'{n_dice=}')
-    print(f'{scores=}')
+    print(f"{n_dice=}")
+    print(f"{scores=}")
     solution = n_dice * min(scores)
-    print(f'{solution=}')
+    print(f"{solution=}")
 
-    print('\nTask 02')
+    print("\nTask 02")
     game_q = DiracDiceQuantum(start_positions)
     wins = game_q.outcome()
-    print(f'{wins=}')
+    print(f"{wins=}")
     n_winning_universes = max(wins)
-    print(f'{n_winning_universes=}')
+    print(f"{n_winning_universes=}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

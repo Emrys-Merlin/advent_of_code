@@ -29,13 +29,13 @@ class Node:
 
     depth: int
     threshold: int
-    right_neighbor: 'Node'
-    child: 'Node'
+    right_neighbor: "Node"
+    child: "Node"
     state: int = 0
 
     def __repr__(self) -> str:
         """Representation of Node."""
-        return f'Node({self.depth=}, {self.threshold=}, {self.state=})'
+        return f"Node({self.depth=}, {self.threshold=}, {self.state=})"
 
     def insert_right(self, threshold: int):
         """Insert node to the right.
@@ -43,19 +43,11 @@ class Node:
         :param threshold: set threshold
         """
         child = deepcopy(self.child)
-        new_node = Node(
-            self.depth,
-            threshold,
-            self.right_neighbor,
-            child,
-            self.state
-        )
+        new_node = Node(self.depth, threshold, self.right_neighbor, child, self.state)
         self.right_neighbor = new_node
 
     def compute_intervals(
-            self,
-            limits: np.ndarray,
-            intervals: Tuple[int, int, int] = (0, 0, 0)
+        self, limits: np.ndarray, intervals: Tuple[int, int, int] = (0, 0, 0)
     ) -> Tuple[int, int, int]:
         """Compute interval length.
 
@@ -78,24 +70,9 @@ class Cube:
 
     def __init__(self):
         """Initialize reactor cube."""
-        z_node = Node(
-            2,
-            -maxsize,
-            Node(2, maxsize, None, None),
-            None
-        )
-        y_node = Node(
-            1,
-            -maxsize,
-            Node(1, maxsize, None, None),
-            z_node
-        )
-        self.tree = Node(
-            0,
-            -maxsize,
-            Node(0, maxsize, None, None),
-            y_node
-        )
+        z_node = Node(2, -maxsize, Node(2, maxsize, None, None), None)
+        y_node = Node(1, -maxsize, Node(1, maxsize, None, None), z_node)
+        self.tree = Node(0, -maxsize, Node(0, maxsize, None, None), y_node)
 
     def reboot(self, instructions: List[Instruction]):
         """Reboot reactor.
@@ -156,14 +133,11 @@ class Cube:
                 new_intervals = new_node.compute_intervals(limits, intervals)
                 stack.append((new_node, new_intervals))
 
-            if (
-                    new_node.threshold < limits[depth, 0] or
-                    threshold >= limits[depth, 1]
-            ):
+            if new_node.threshold < limits[depth, 0] or threshold >= limits[depth, 1]:
                 continue
 
             if depth == 2:
-                count += state*prod(intervals)
+                count += state * prod(intervals)
                 continue
 
             new_intervals = node.child.compute_intervals(limits, intervals)
@@ -193,7 +167,7 @@ class Cube:
 
 
 @click.command()
-@click.argument('path', type=click.Path())
+@click.argument("path", type=click.Path())
 def main(path: Union[str, Path]):
     """Solve day 22 tasks.
 
@@ -205,14 +179,14 @@ def main(path: Union[str, Path]):
     path = Path(path)
 
     instructions = []
-    cube_limits = np.array(list(zip([np.inf]*3, [-np.inf]*3)))
-    with open(path, 'r') as f:
+    cube_limits = np.array(list(zip([np.inf] * 3, [-np.inf] * 3)))
+    with open(path, "r") as f:
         for line in f.readlines():
             state, rest = line.strip().split()
-            state = 1 if state == 'on' else 0
+            state = 1 if state == "on" else 0
             cuboid = []
-            for i, limits in enumerate(rest.split(',')):
-                start, stop = limits[2:].split('..')
+            for i, limits in enumerate(rest.split(",")):
+                start, stop = limits[2:].split("..")
                 start, stop = int(start), int(stop) + 1
                 limit = (start, stop)
                 cuboid.append(limit)
@@ -223,27 +197,24 @@ def main(path: Union[str, Path]):
                 if stop > cube_limits[i, 1]:
                     cube_limits[i, 1] = stop
 
-            instructions.append(Instruction(
-                state=state,
-                limits=np.array(cuboid)
-            ))
+            instructions.append(Instruction(state=state, limits=np.array(cuboid)))
 
-    cube_limits = cube_limits.astype('int')
+    cube_limits = cube_limits.astype("int")
 
-    print(f'{len(instructions)=}')
+    print(f"{len(instructions)=}")
 
     cube = Cube()
     cube.reboot(instructions)
 
-    print('\nTask 01')
-    limits = np.array(list(zip([-50]*3, [51]*3)))
+    print("\nTask 01")
+    limits = np.array(list(zip([-50] * 3, [51] * 3)))
     active_cores = cube.count_active(limits)
-    print(f'{active_cores=}')
+    print(f"{active_cores=}")
 
-    print('\nTask 02')
+    print("\nTask 02")
     active_cores = cube.count_active(cube_limits)
-    print(f'{active_cores=}')
+    print(f"{active_cores=}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
