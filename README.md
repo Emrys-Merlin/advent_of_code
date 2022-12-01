@@ -1,4 +1,3 @@
 # Advent of Code
-My solutions to [advent of code](https://adventofcode.com/) using python.
 
-`environment.yml` contains the conda environment used.
+This repository contains my solutions to the AoCs I have taken part in so far. Each year has its own subdirectory and you can find the corresponding python environment therein.
