@@ -1,0 +1,14 @@
+name: aoc2022
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.10
+  - tqdm
+  - numpy
+  - click
+  - mypy
+  - black
+  - flake8
+  - pre-commit
+prefix: /home/tim/.anaconda3/envs/aoc2022
