@@ -2,17 +2,17 @@
 
 https://adventofcode.com/2021/day/22
 """
-from pathlib import Path
-from typing import List, Tuple, Union
 from collections import deque
 from copy import deepcopy
+from dataclasses import dataclass
 from math import prod
+from pathlib import Path
+from sys import maxsize
+from typing import List, Tuple, Union
 
 import click
 import numpy as np
 from tqdm import tqdm
-from dataclasses import dataclass
-from sys import maxsize
 
 
 @dataclass
