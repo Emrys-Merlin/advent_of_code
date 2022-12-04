@@ -70,6 +70,9 @@ def main(fn: str):
             left_range = tuple(int(i) for i in left.split("-"))
             right_range = tuple(int(i) for i in right.split("-"))
 
+            assert len(left_range) == 2
+            assert len(right_range) == 2
+
             contained_counter += int(is_subset(left_range, right_range))
             overlap_counter += int(overlaps(left_range, right_range))
 
