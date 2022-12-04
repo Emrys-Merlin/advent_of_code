@@ -73,8 +73,8 @@ def main(fn: str):
             assert len(left_range) == 2
             assert len(right_range) == 2
 
-            contained_counter += int(is_subset(left_range, right_range))
-            overlap_counter += int(overlaps(left_range, right_range))
+            contained_counter += int(is_subset(left_range, right_range))  # type: ignore[arg-type]
+            overlap_counter += int(overlaps(left_range, right_range))  # type: ignore[arg-type]
 
     print(f"Task 01: {contained_counter}")
     print(f"Task 02: {overlap_counter}")
