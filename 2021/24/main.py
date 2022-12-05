@@ -1,12 +1,17 @@
-from collections import namedtuple
+import itertools as it
+import re
 from dataclasses import dataclass
 from pathlib import Path
-from queue import PriorityQueue
+from typing import Optional
 
 import click
-from tqdm import tqdm
 
-Instruction = namedtuple("Instruction", ["instr", "a", "b"], defaults=[None] * 3)
+
+@dataclass
+class Instruction:
+    instr: str
+    a: str
+    b: Optional[str | int] = None
 
 
 @dataclass
@@ -28,7 +33,7 @@ class ALU:
             self.instructions[instruction_counter:], instruction_counter
         ):
             if instruction.b in ["w", "x", "y", "z"]:
-                tmp = variables.get(instruction.b, 0)
+                tmp = variables.get(instruction.b, 0)  # type: ignore[arg-type]
             elif instruction.b is not None:
                 tmp = int(instruction.b)
 
@@ -36,7 +41,7 @@ class ALU:
                 try:
                     variables[instruction.a] = int(input[i])
                     i += 1
-                except:
+                except IndexError:
                     break
 
             elif instruction.instr == "add":
@@ -57,52 +62,130 @@ class ALU:
             else:
                 raise Exception(f"Cannot interpret instruction {instruction.instr=}.")
 
-            # print(variables)
-
         return variables.get(variable, 0), ic
 
-    def find_largest_serial_number(self) -> tuple[int, int]:
 
-        min_sn = int(1e15) - 1
-        max_sn = int(1e14)
-        pq: PriorityQueue[tuple[int, str, int]] = PriorityQueue()
-        pq.put((0, "", 0))
-        # j = 0
-        while pq:
-            z, sn, ic = pq.get()
-            # print(f"{sn=}\t{z=}\t{ic=}")
-            # j += 1
-            # if j > 10:
-            #     break
+# Solution from
+# https://www.keiruaprod.fr/blog/2021/12/29/a-comprehensive-guide-to-aoc-2021-day-24.html
+# I was stuck and used the above solution to understand the approach.
+# This is not my solution.
+def extract_parameters(program: str) -> list[list[int]]:
+    """Extract variable parameters from each block in the ALU program
 
-            if z > 26 ** (14 - len(sn)):
-                # print(f"Discard: {sn=}\t{z=}")
-                continue
+    Parameters
+    ----------
+    program : str
+        String representation of the ALU program
 
-            # print(f"{sn=}\t{z=}")
+    Returns
+    -------
+    list[list[int]]
+        List of variable parameters. Each entry is a list with 3 elements: the divisor, the equal check offset, and the summand.
 
-            if z == 0 and len(sn) == 14:
-                if int(sn) < min_sn:
-                    min_sn = int(sn)
-                if int(sn) > max_sn:
-                    max_sn = int(sn)
-                # print(f"{sn=}")
-                continue
+    """
+    repeated_program = r"""inp w
+mul x 0
+add x z
+mod x 26
+div z (.*)
+add x (.*)
+eql x w
+eql x 0
+mul y 0
+add y 25
+mul y x
+add y 1
+mul z y
+mul y 0
+add y w
+add y (.*)
+mul y x
+add z y"""
 
-            for i in range(9, 0, -1):
-                cand = sn + str(i)
-                new_z, new_ic = self(str(i), variable_init=z, instruction_counter=ic)
-                pq.put((new_z, cand, new_ic))
+    div_check_add = re.findall(repeated_program, program)
+    assert len(div_check_add) == 14, len(div_check_add)
+    return [list(map(int, dca)) for dca in div_check_add]
 
-        print(min_sn)
-        print(max_sn)
 
-        return min_sn, max_sn
+def backward(xcheck: int, yadd: int, zdiv: int, z_final: int, w: int) -> list[int]:
+    """Returns the possible values of z before a single block
+    if the final value of z is z_final and input is w
+
+    Parameters
+    ----------
+    xcheck : int
+        The offset at the x equal check
+    yadd : int
+        Number added to y
+    zdiv : int
+        Divisor of z
+    z_final : int
+        The z score at the end of the (forward) block
+    w : int
+        The input digit to use
+
+
+    Returns
+    -------
+    list[int]
+        Possible z values before the block
+    """
+    zs = []
+    x = z_final - w - yadd
+    if x % 26 == 0:
+        zs.append(x // 26 * zdiv)
+    if 0 <= w - xcheck < 26:
+        z0 = z_final * zdiv
+        zs.append(w - xcheck + z0)
+
+    return zs
+
+
+def solve(div_check_add: list[list[int]], part: int = 1) -> str:
+    """Goes backward through each block and finds possible digits w
+
+    Parameters
+    ----------
+    div_check_add : list[list[int]]
+        List of the three variable parameters in each block
+    part : int, optional
+        Indicate if task 01 or task 02 is solved, by default 1
+
+    Returns
+    -------
+    str
+        Valid serial number as a string
+    """
+    zs = {0}
+    result: dict[int, tuple[int, ...]] = {}
+    if part == 1:
+        ws = list(range(1, 10))
+    else:
+        ws = list(range(9, 0, -1))
+    for zdiv, xcheck, yadd in div_check_add[::-1]:
+        newzs = set()
+        for w, z in it.product(ws, zs):
+            z0s = backward(xcheck, yadd, zdiv, z, w)
+            for z0 in z0s:
+                newzs.add(z0)
+                result[z0] = (w,) + result.get(z, ())
+        zs = newzs
+    return "".join(map(str, result[0]))
 
 
 @click.command()
 @click.argument("fn", type=click.Path(exists=True, dir_okay=False))
 def main(fn: str):
+    """Solution for day 24
+
+    FN should point to the input file.
+
+    \f
+    Parameters
+    ----------
+    fn : str
+        Path to input file
+    """
     in_fn = Path(fn)
 
     instructions = []
@@ -110,12 +193,17 @@ def main(fn: str):
         for line in f.readlines():
             instr = Instruction(*line.strip().split(" "))
             instructions.append(instr)
+        f.seek(0)
+        div_check_add = extract_parameters(f.read())
 
+    sn = solve(div_check_add=div_check_add, part=1)
     alu = ALU(instructions)
+    z, _ = alu(sn)
+    print(f"Task 01: {sn}\t{z=}")
 
-    serial_number = alu.find_largest_serial_number()
-
-    print(f"Task 01: {serial_number}")
+    sn = solve(div_check_add=div_check_add, part=2)
+    z, _ = alu(sn)
+    print(f"Task 02: {sn}\t{z=}")
 
 
 if __name__ == "__main__":
