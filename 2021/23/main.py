@@ -2,7 +2,9 @@
 
 https://adventofcode.com/2021/day/23
 
+Solution inspired by and adapted from https://pastebin.com/hK1Y7St7
 
+Representation of grid:
 +---------------+
 |01  2  3  4  56|
 +-+A0+B0+C0+D0+-+
@@ -12,18 +14,19 @@ https://adventofcode.com/2021/day/23
   +--+--+--+--+
 """
 from copy import deepcopy
-from dataclasses import dataclass
 from functools import cache
 from heapq import heappop, heappush
 from pathlib import Path
 from time import perf_counter_ns
-from typing import Dict, Iterator, List, Optional, Tuple, Union
+from typing import Optional, Union
 
 import click
 
 
 class Burrow:
-    # First Hall square and distance to end.
+    # Save distances from room entrances to hallway positions
+    # Key: (room type, hall pos)
+    # Value: (First hall square in path, distance)
     HALL_DIST: dict[tuple[str, int], tuple[int, int]] = {
         ("A", 0): (1, 3),
         ("A", 1): (1, 2),
@@ -55,6 +58,7 @@ class Burrow:
         ("D", 6): (5, 3),
     }
 
+    # Cost factors for the different amphipods
     COST_FACTOR: dict[str, int] = {
         "A": 1,
         "B": 10,
@@ -62,6 +66,9 @@ class Burrow:
         "D": 1000,
     }
 
+    # Arbitrary hall position between (room1, room2)
+    # We need thes for the remainder cost estimate of the A*
+    # algorithm
     INBETWEEN_POS: dict[frozenset[str, str], int] = {
         frozenset(["A", "B"]): 2,
         frozenset(["A", "C"]): 2,
@@ -71,6 +78,7 @@ class Burrow:
         frozenset(["C", "D"]): 4,
     }
 
+    # Additional lines for task 02
     ADDITIONAL_LINES = [
         "  #D#C#B#A#",
         "  #D#B#A#C#",
@@ -82,6 +90,17 @@ class Burrow:
         cost: int = 0,
         est_remainder: Optional[int] = None,
     ) -> None:
+        """Initialized burrow
+
+        Parameters
+        ----------
+        state : dict[str, list[str  |  None]]
+            State of the burrow encoded as a dictionary with room_type as key and an array with the room positions. See top of file for grid representation.
+        cost : int, optional
+            Cost to end up at current configuration, by default 0
+        est_remainder : Optional[int], optional
+            Lower bound for remaining cost, if None, will be estimated internally, by default None
+        """
         self.state = deepcopy(state)
         self.cost = cost
         if est_remainder is None:
@@ -92,6 +111,20 @@ class Burrow:
 
     @classmethod
     def from_input(cls, burrow_txt: str, second_task: bool = False) -> "Burrow":
+        """Transform text representation to Burrow
+
+        Parameters
+        ----------
+        burrow_txt : str
+            Text representation
+        second_task : bool, optional
+            If true, adds the additional lines, by default False
+
+        Returns
+        -------
+        Burrow
+            Burrow representation with 0 cost and remainder cost estimated.
+        """
         state: dict[str, list[str | None]] = {
             "H": [None] * 7,
             "A": [],
@@ -118,12 +151,42 @@ class Burrow:
     @classmethod
     @cache
     def movement_cost(
-        cls, room_type: str, room_depth: int, hall_field: int, aquapod: str
+        cls, room_type: str, room_depth: int, hall_field: int, amphipod: str
     ) -> int:
+        """Compute movement cost between an 'ABCD' room and the hallway
+
+        Parameters
+        ----------
+        room_type : str
+            Which room 'ABCD'
+        room_depth : int
+            How deep in the room is the amphipod
+        hall_field : int
+            Which hall field
+        amphipod : str
+            Which type of amphipod 'ABCD' moves
+
+        Returns
+        -------
+        int
+            Cost for move
+        """
         _, dist = cls.HALL_DIST[(room_type, hall_field)]
-        return (dist + room_depth) * cls.COST_FACTOR[aquapod]
+        return (dist + room_depth) * cls.COST_FACTOR[amphipod]
 
     def estimate_remainder_cost(self) -> int:
+        """Heuristic to estimate the remaining movement cost
+
+        This heuristic computes a lower bound of the movement
+        cost. Each amphipod takes the shortest path from its current
+        position to the first spot in its room ignoring any other
+        amphipods.
+
+        Returns
+        -------
+        int
+            Estimated remaining movement cost
+        """
         est = 0
         for hall_pos, amphipod in enumerate(self.state["H"]):
             if amphipod is None:
@@ -132,7 +195,7 @@ class Burrow:
                 room_type=amphipod,
                 room_depth=0,
                 hall_field=hall_pos,
-                aquapod=amphipod,
+                amphipod=amphipod,
             )
 
         for room_type in "ABCD":
@@ -145,18 +208,32 @@ class Burrow:
                     room_type=room_type,
                     room_depth=room_depth,
                     hall_field=hall_pos,
-                    aquapod=amphipod,
+                    amphipod=amphipod,
                 )
                 est += self.movement_cost(
                     room_type=amphipod,
                     room_depth=0,
                     hall_field=hall_pos,
-                    aquapod=amphipod,
+                    amphipod=amphipod,
                 )
 
         return est
 
     def path_free(self, room_type: str, hall_field: int) -> bool:
+        """Checks if the path in the hallway to/from room 'ABCD' is free
+
+        Parameters
+        ----------
+        room_type : str
+            Rom 'ABCD'
+        hall_field : int
+            Position in hall
+
+        Returns
+        -------
+        bool
+            True, if path is free
+        """
         hall_start, _ = self.HALL_DIST[(room_type, hall_field)]
         if hall_start <= hall_field:
             res = all(
@@ -169,6 +246,13 @@ class Burrow:
         return res
 
     def __str__(self) -> str:
+        """Create string representation of grid
+
+        Returns
+        -------
+        str
+            String representation of grid
+        """
         h = [amphipod if amphipod is not None else " " for amphipod in self.state["H"]]
 
         lines = [
@@ -192,6 +276,13 @@ class Burrow:
         return "\n".join(lines)
 
     def is_sorted(self) -> bool:
+        """Check if the grid is in the end state
+
+        Returns
+        -------
+        bool
+            True if all amphipods are in their correct room
+        """
         for room_type in "ABCD":
             if any(amphipod != room_type for amphipod in self.state[room_type]):
                 return False
@@ -199,28 +290,87 @@ class Burrow:
         return True
 
     def room_open(self, room_type: str) -> bool:
+        """Check if a room is does only contain amphipods of the correct type
+
+        Parameters
+        ----------
+        room_type : str
+            Room 'ABCD'
+
+        Returns
+        -------
+        bool
+            True, if the room contains only correct inhabitants
+        """
         return all(amphipod in [None, room_type] for amphipod in self.state[room_type])
 
     def __lt__(self, other: "Burrow") -> bool:
+        """Implement lower than based on previous movement cost + estimated remaining movement cost
+
+        Parameters
+        ----------
+        other : Burrow
+            Other burrow
+
+        Returns
+        -------
+        bool
+            True, if self < other
+        """
         return self.cost + self.est_remainder < other.cost + other.est_remainder
 
     def _state_hash(self) -> int:
-        # return hash(
-        #     tuple(
-        #         amphipod for room_type in "ABCDH" for amphipod in self.state[room_type]
-        #     )
-        # )
-        # return id(self.state)
-        # return hash(str(self))
+        """Encode current burrow state in a hash
+
+        Returns
+        -------
+        int
+            Hash of state
+        """
         return hash(tuple(tuple(self.state[room_type]) for room_type in "ABCDH"))
 
     def __hash__(self) -> int:
+        """Return cached hash
+
+        Returns
+        -------
+        int
+            Hash of sate
+        """
         return self.state_hash
 
     def next_open_spot_in_room(self, room_type: str) -> int:
+        """Get first empty room spot
+
+        Parameters
+        ----------
+        room_type : str
+            Room 'ABCD'
+
+        Returns
+        -------
+        int
+            First empty room spot
+        """
         return len(self.state[room_type]) - 1 - self.state[room_type][::-1].index(None)
 
     def move(self, from_room: str, from_pos: int, to_room: str, to_pos: int):
+        """Move amphipod to new position and compute costs and update remainder
+
+        Caution! This method can only move an amphipod to or from the hallway.
+        A move from room to room directly is not implemented.
+
+        Parameters
+        ----------
+        from_room : str
+            Room 'ABCD' or hallway 'H'
+        from_pos : int
+            Position in room
+        to_room : str
+            Room 'ABCD' or hallway 'H
+        to_pos : int
+            Position in room
+        """
         amphipod = self.state[from_room][from_pos]
         assert amphipod is not None
         if from_room == "H":
@@ -228,26 +378,26 @@ class Burrow:
                 room_type=to_room,
                 room_depth=to_pos,
                 hall_field=from_pos,
-                aquapod=amphipod,
+                amphipod=amphipod,
             )
             self.est_remainder -= Burrow.movement_cost(
                 room_type=to_room,
                 room_depth=0,
                 hall_field=from_pos,
-                aquapod=amphipod,
+                amphipod=amphipod,
             )
         else:
             self.cost += Burrow.movement_cost(
                 room_type=from_room,
                 room_depth=from_pos,
                 hall_field=to_pos,
-                aquapod=amphipod,
+                amphipod=amphipod,
             )
             self.est_remainder += Burrow.movement_cost(
                 room_type=amphipod,
                 room_depth=0,
                 hall_field=to_pos,
-                aquapod=amphipod,
+                amphipod=amphipod,
             )
             if from_room != amphipod:
                 hall_pos = self.INBETWEEN_POS[frozenset([from_room, amphipod])]
@@ -255,13 +405,13 @@ class Burrow:
                     room_type=from_room,
                     room_depth=from_pos,
                     hall_field=hall_pos,
-                    aquapod=amphipod,
+                    amphipod=amphipod,
                 )
                 self.est_remainder -= Burrow.movement_cost(
                     room_type=amphipod,
                     room_depth=0,
                     hall_field=hall_pos,
-                    aquapod=amphipod,
+                    amphipod=amphipod,
                 )
 
         self.state[to_room][to_pos] = self.state[from_room][from_pos]
@@ -269,6 +419,13 @@ class Burrow:
         self.state_hash = self._state_hash()
 
     def valid_states(self) -> list["Burrow"]:
+        """Get a list of valid new burrow states using a single amphipod move
+
+        Returns
+        -------
+        list[Burrow]
+            List of reachable burrow states
+        """
         next_states = []
 
         # Try to move hallway points into rooms
@@ -332,7 +489,21 @@ class Burrow:
 
         return next_states
 
-    def sort_amphipods(self) -> "Burrow":
+    def sort_amphipods(self, max_iter: Optional[int] = None) -> "Burrow":
+        """Find cheapest way to move amphipods to their proper room
+
+        This method implements the A* algorithm.
+
+        Parameters
+        ----------
+        max_iter : Optional[int], optional
+            Max iterations for debug purposes, by default None
+
+        Returns
+        -------
+        Burrow
+            Final burrow, with movement cost
+        """
         visited = set()
         heap = [self]
 
@@ -340,7 +511,7 @@ class Burrow:
 
         while heap:
             burrow = heappop(heap)
-            visited.add(burrow)
+            visited.add(hash(burrow))
 
             if i % 10000 == 0:
                 print(burrow)
@@ -351,242 +522,14 @@ class Burrow:
                 return burrow
 
             for next_burrow in burrow.valid_states():
-                if next_burrow not in visited:
+                if hash(next_burrow) not in visited:
                     heappush(heap, next_burrow)
+
+            if max_iter is not None and i >= max_iter:
+                break
 
             i += 1
         return Burrow(self.state, cost=-1)
-
-
-# @dataclass
-# class Square:
-#     """Square of the burrow."""
-
-#     kind: str
-#     coord: Tuple[int, int]
-#     neighbors: List["Square"]
-#     state: Optional[str] = None
-
-#     def __repr__(self) -> str:
-#         """Print square."""
-#         return f"Square(kind={self.kind}, coord={self.coord}, " f"state={self.state})"
-
-
-# class Burrow:
-#     """State of the burrow."""
-
-#     def __init__(
-#         self, start_positions: Dict[Tuple[int, int], str], total_energy: int = 0
-#     ):
-#         """Initialize burrow."""
-#         temp_square = Square("temp", coord=(-1, -1), neighbors=[])
-#         prev_square = temp_square
-#         self.room_depth = max(y for _, y in start_positions.keys())
-#         self.coord_dict: Dict[Tuple[int, int], Square] = {}
-#         for i in range(11):
-#             kind = "entrance" if i in [2, 4, 6, 8] else "hallway"
-#             square = Square(kind=kind, coord=(i, 0), neighbors=[prev_square])
-#             prev_square.neighbors.append(square)
-#             self.coord_dict[(i, 0)] = square
-
-#             if i in [2, 4, 6, 8]:
-#                 vert_square = square
-#                 idx = i // 2 - 1
-#                 kind = chr(65 + idx)
-#                 for j in range(1, self.room_depth + 1):
-#                     coord = (i, j)
-#                     room_square = Square(kind, coord, neighbors=[vert_square])
-#                     vert_square.neighbors.append(room_square)
-#                     self.coord_dict[coord] = room_square
-#                     vert_square = room_square
-
-#             prev_square = square
-
-#         self.entry_point = temp_square.neighbors[0]
-#         self.entry_point.neighbors.remove(temp_square)
-
-#         for coord, amphipod in start_positions.items():
-#             self.coord_dict[coord].state = amphipod
-
-#         self.total_energy = 0
-#         # Save the path as a string representation for debugging
-#         self.previous = ""
-
-#     def __repr__(self) -> str:
-#         """Print burrow."""
-#         grid = [
-#             [" "] * 11,
-#             ["-", "+", " ", "+", " ", "+", " ", "+", " ", "+", "-"],
-#         ]
-#         for _ in range(self.room_depth - 1):
-#             grid.append(list([" ", "|", " ", "|", " ", "|", " ", "|", " ", "|", ""]))
-
-#         for coord, square in self.coord_dict.items():
-#             if square.state is None:
-#                 continue
-
-#             x, y = coord
-
-#             grid[y][x] = square.state
-
-#         res = "+" + "-" * 11 + "+\n"
-#         res += "|" + "".join(grid[0]) + "|\n"
-#         res += "+" + "".join(grid[1]) + "+\n"
-#         for i in range(2, self.room_depth + 1):
-#             res += " " + "".join(grid[i]) + "\n"
-#         res += "  +-+-+-+-+\n"
-#         return res
-
-#     def __str__(self) -> str:
-#         """Transform to string representation."""
-#         return self.__repr__()
-
-#     def _home_filled(self, square: Square) -> bool:
-#         if square.kind != square.state:
-#             return False
-
-#         if square.coord[1] == self.room_depth:
-#             return True
-
-#         x = square.coord[0]
-#         y = square.coord[1] + 1
-#         square = self.coord_dict[(x, y)]
-#         return self._home_filled(square)
-
-#     def _swap(self, square: Square, new_square: Square) -> "Burrow":
-#         burrow = deepcopy(self)
-#         burrow.coord_dict[new_square.coord].state = square.state
-#         burrow.coord_dict[square.coord].state = None
-#         energy = (
-#             abs(square.coord[0] - new_square.coord[0])
-#             + square.coord[1]
-#             + new_square.coord[1]
-#         )
-#         energy *= 10 ** (ord(square.state) - 65)
-#         burrow.total_energy += energy
-#         burrow.previous = self.previous + "\n\n" + str(self) + f"{energy=}"
-#         return burrow
-
-#     def valid_moves(
-#         self, start_coord: Optional[Tuple[int, int]] = None
-#     ) -> Iterator["Burrow"]:
-#         """Compute all valid moves.
-
-#         If coord is given, compute only moves for amphipods at given coordinate
-#         (if there is one).
-#         """
-#         coord_dict = self.coord_dict
-#         if start_coord is not None:
-#             coord_dict = {start_coord: self.coord_dict[start_coord]}
-
-#         for coord, square in coord_dict.items():
-#             if square.state is None or self._home_filled(square):
-#                 continue
-
-#             x_home = 2 * (ord(square.state) - 64)
-#             if square.kind == "hallway":
-#                 sx = square.coord[0]
-#                 if x_home > sx:
-#                     left = sx + 1
-#                     right = x_home
-#                 else:
-#                     left = x_home + 1
-#                     right = sx
-#                 if self.coord_dict[(x_home, 1)].state is not None or any(
-#                     self.coord_dict[(t, 0)].state is not None
-#                     for t in range(left, right)
-#                 ):
-#                     continue
-
-#                 for y in range(1, self.room_depth + 1):
-#                     new_square = self.coord_dict[(x_home, y)]
-#                     if new_square.state is not None:
-#                         break
-
-#                     yield self._swap(square, new_square)
-
-#                 continue
-
-#             x, y = square.coord
-#             left = max(
-#                 [-1]
-#                 + [t for t in range(x) if self.coord_dict[(t, 0)].state is not None]
-#             )
-#             if left <= 0:
-#                 left += 1
-#             else:
-#                 left += 2
-
-#             right = min(
-#                 [11]
-#                 + [
-#                     t
-#                     for t in range(x + 1, 11)
-#                     if self.coord_dict[(t, 0)].state is not None
-#                 ]
-#             )
-#             if any(self.coord_dict[x, t].state is not None for t in range(0, y)) or (
-#                 left == y + 1 and right == y + 1
-#             ):
-#                 continue
-
-#             xs = []
-#             if left == 0:
-#                 xs.append(0)
-#                 left = 1
-
-#             xs += list(range(left, right, 2))
-
-#             if right == 11:
-#                 xs.append(10)
-
-#             for t in xs:
-#                 new_square = self.coord_dict[(t, 0)]
-#                 yield self._swap(square, new_square)
-
-#             if x_home < left or right <= x_home:
-#                 continue
-
-#             for t in range(1, self.room_depth + 1):
-#                 new_square = self.coord_dict[(x_home, t)]
-#                 if new_square.state is not None:
-#                     break
-#                 yield self._swap(square, new_square)
-
-#     def is_sorted(self) -> bool:
-#         """Check if burrow is sorted."""
-#         for square in self.coord_dict.values():
-#             if square.state is not None and square.state != square.kind:
-#                 return False
-
-#         return True
-
-#     @staticmethod
-#     def sort_amphipods(start_positions: List[Tuple[str, str]]) -> "Burrow":
-#         """Sort amphipods with minimal energy."""
-#         burrow = Burrow(start_positions)
-#         visited = set()
-
-#         heap = [burrow]
-
-#         while len(heap):
-#             burrow = heappop(heap)
-
-#             fingerprint = str(burrow)
-#             if fingerprint in visited:
-#                 continue
-
-#             visited.add(fingerprint)
-
-#             if burrow.is_sorted():
-#                 return burrow
-
-#             for new_burrow in burrow.valid_moves():
-#                 heappush(heap, new_burrow)
-
-#     def __lt__(self, other: "Burrow") -> bool:
-#         """Neede for heap."""
-#         return self.total_energy < other.total_energy
 
 
 @click.command()
@@ -605,75 +548,24 @@ def main(path: Union[str, Path], task01: bool, task02: bool):
     """
     path = Path(path)
 
-    start_positions = {}
-    start_positions_long = {
-        (2, 2): "D",
-        (2, 3): "D",
-        (4, 2): "C",
-        (4, 3): "B",
-        (6, 2): "B",
-        (6, 3): "A",
-        (8, 2): "A",
-        (8, 3): "C",
-    }
     with open(path, "r") as f:
         txt_grid = f.read()
         burrow = Burrow.from_input(deepcopy(txt_grid))
         burrow2 = Burrow.from_input(deepcopy(txt_grid), second_task=True)
-        # for i, line in enumerate(f.readlines()):
-        #     if i < 2 or i > 3:
-        #         continue
-        #     components = line.strip().strip("#").split("#")
-        #     for j, amphipod in enumerate(components):
-        #         x = 2 * j + 2
-        #         y = i - 1
-        #         start_positions[(x, y)] = amphipod
-        #         if y == 2:
-        #             start_positions_long[(x, y + 2)] = amphipod
-        #         else:
-        #             start_positions_long[(x, y)] = amphipod
 
     if task01:
         print("\nTask 01")
-        # burrow = Burrow(start_positions)
         print(burrow)
         print(f"{burrow.cost=}")
         print(f"{burrow.est_remainder=}")
 
-        # next_burrows = burrow.valid_states()
-        # for nb in next_burrows[:2]:
-        #     print(nb)
-        #     print(nb.cost)
-        # print(nb.next_open_spot_in_room("A"))
-
         t_start = perf_counter_ns()
-        sorted_burrow = burrow.sort_amphipods()
+        sorted_burrow = burrow.sort_amphipods(max_iter=None)
         t_stop = perf_counter_ns()
         print(sorted_burrow)
         print(f"{sorted_burrow.cost=}")
         delta = (t_stop - t_start) * 10 ** (-9)
         print(f"Running time: {delta}s")
-
-        # burrow = Burrow.sort_amphipods(start_positions)
-        # print(burrow.previous)
-        # print(f"{burrow.total_energy=}")
-
-        # test_burrow = Burrow(
-        #     state={
-        #         "H": [None, None, "B", "C", None, None, None],
-        #         "A": ["B", "A"],
-        #         "B": [None, "D"],
-        #         "C": [None, "C"],
-        #         "D": ["D", "A"],
-        #     },
-        #     cost=240,
-        # )
-        # print(test_burrow)
-        # print(f"{test_burrow.cost=}")
-
-        # for nb in test_burrow.valid_states():
-        #     print(nb)
-        #     print(f"{nb.cost=}")
 
     if task02:
         print("\nTask 02")
@@ -686,38 +578,6 @@ def main(path: Union[str, Path], task01: bool, task02: bool):
         print(f"{sorted_burrow.cost=}")
         delta = (t_stop - t_start) * 10 ** (-9)
         print(f"Running time: {delta}s")
-        burrow_long = Burrow(start_positions_long)
-        print(burrow_long)
-
-        # burrow_long = Burrow.sort_amphipods(start_positions_long)
-        # print(burrow_long.previous)
-        # print(f"{burrow_long.total_energy=}")
-
-    # start_positions = {
-    #     (8, 2): 'A',
-    #     (2, 2): 'A',
-    #     (4, 1): 'B',
-    #     (4, 2): 'B',
-    #     (6, 1): 'C',
-    #     (6, 2): 'C',
-    #     (8, 1): 'D',
-    #     (5, 0): 'D'
-    # }
-
-    # burrow = Burrow(start_positions)
-    # print(burrow)
-
-    # print('\nTask 01')
-    # burrow = Burrow.sort_amphipods(start_positions)
-    # print(f'{burrow.total_energy=}')
-    # print(burrow.previous)
-
-    # for new_burrow in burrow.valid_moves():
-    #     print(new_burrow)
-    #     print(f'{new_burrow.total_energy=}')
-    #     print(new_burrow.is_sorted())
-
-    #     # print(new_burrow.previous)
 
 
 if __name__ == "__main__":
