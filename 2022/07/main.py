@@ -96,7 +96,7 @@ class Node:
 
         return result
 
-    def comput_dir_sizes(self, dir_limit: int = 100_000) -> int:
+    def compute_dir_sizes(self, dir_limit: int = 100_000) -> int:
         """Compute the cumulative size of directories and the size of small directories
 
         Parameters
@@ -149,7 +149,7 @@ class Node:
         """
         root_size = self.size
         if root_size == -1:
-            self.comput_dir_sizes()
+            self.compute_dir_sizes()
             root_size = self.size
 
         remaining_space = max_space - root_size
@@ -190,7 +190,7 @@ def main(fn: str):
 
         root = Node.from_text(f.read())
 
-    result = root.comput_dir_sizes()
+    result = root.compute_dir_sizes()
     print(root.print_listing())
     print(f"Task 01: {result}")
 
