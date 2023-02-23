@@ -1,6 +1,7 @@
 import re
 from copy import deepcopy
 from dataclasses import dataclass
+from fractions import Fraction
 from pathlib import Path
 from typing import Union
 
@@ -13,50 +14,47 @@ class Unit:
 
     Parameters
     ----------
-    b : float
+    b : Fraction
         bias or constant coefficient of the polynomial
-    x : float
+    x : Fraction
         leading coefficient
     """
 
-    b: float
-    x: float = 0.0
+    b: Fraction
+    x: Fraction = Fraction()
 
-    def __add__(self, other: Union[int, float, "Unit"]) -> "Unit":
+    def __add__(self, other: Union[int, Fraction, "Unit"]) -> "Unit":
         if isinstance(other, Unit):
             return Unit(b=self.b + other.b, x=self.x + other.x)
-        elif isinstance(other, int | float):
+        elif isinstance(other, int | Fraction):
             return Unit(b=self.b + other, x=self.x)
         else:
             return NotImplemented
 
-    def __sub__(self, other: Union[int, float, "Unit"]) -> "Unit":
+    def __sub__(self, other: Union[int, Fraction, "Unit"]) -> "Unit":
         if isinstance(other, Unit):
             return Unit(b=self.b - other.b, x=self.x - other.x)
-        elif isinstance(other, int | float):
+        elif isinstance(other, int | Fraction):
             return Unit(b=self.b - other, x=self.x)
         else:
             return NotImplemented
 
-    def __mul__(self, other: int | float) -> "Unit":
+    def __mul__(self, other: int | Fraction) -> "Unit":
         return Unit(b=self.b * other, x=self.x * other)
 
-    def __floordiv__(self, other: int) -> "Unit":
-        return Unit(b=self.b // other, x=self.x // other)
-
-    def __truediv__(self, other: int | float) -> "Unit":
+    def __truediv__(self, other: int | Fraction) -> "Unit":
         return Unit(b=self.b / other, x=self.x / other)
 
     def __str__(self) -> str:
         return f"{self.x}x + {self.b}"
 
-    def __rmul__(self, other: int | float) -> "Unit":
+    def __rmul__(self, other: int | Fraction) -> "Unit":
         return self.__mul__(other)
 
-    def __radd__(self, other: Union[int, float, "Unit"]) -> "Unit":
+    def __radd__(self, other: Union[int, Fraction, "Unit"]) -> "Unit":
         return self.__add__(other)
 
-    def __rsub__(self, other: int | float) -> "Unit":
+    def __rsub__(self, other: int | Fraction) -> "Unit":
         return Unit(b=other - self.b, x=-self.x)
 
 
@@ -66,16 +64,16 @@ class Operator:
 
     Parameters
     -------
-    left : str | int | Unit | float
+    left : str | int | Unit | Fraction
         Left operand
-    right : str | int | Unit | float
+    right : str | int | Unit | Fraction
         right operand
     operator : str
         Symbol representing binary operator (has to be +, -, *, /)
     """
 
-    left: str | int | Unit | float
-    right: str | int | Unit | float
+    left: str | int | Unit | Fraction
+    right: str | int | Unit | Fraction
     operator: str
     OPERATIONS = {
         "+": lambda x, y: x + y,
@@ -92,16 +90,16 @@ class Operator:
         bool
             True, if both operands are nombers or a polynomial
         """
-        return isinstance(self.left, (int, Unit, float)) and isinstance(
-            self.right, (int, Unit, float)
+        return isinstance(self.left, (int, Unit, Fraction)) and isinstance(
+            self.right, (int, Unit, Fraction)
         )
 
-    def __call__(self) -> float | Unit:
+    def __call__(self) -> int | Fraction | Unit:
         """Perform operation
 
         Returns
         -------
-        float | Unit
+        int | Fraction | Unit
             Run binary operator on numbers or polynomials
         """
         return self.OPERATIONS[self.operator](self.left, self.right)
@@ -122,7 +120,7 @@ class Monkeys:
             String input
         """
         # Monkeys that shout numbers
-        self.number_monkeys: dict[str, int] = {}
+        self.number_monkeys: dict[str, Fraction] = {}
         # Monkeys that represent operations
         self.operator_monkeys: dict[str, Operator] = {}
 
@@ -134,7 +132,7 @@ class Monkeys:
             match = re.match(self.PATTERN, line)
             if match is None:
                 name, number = line.split(": ")
-                self.number_monkeys[name] = int(number)
+                self.number_monkeys[name] = Fraction(int(number))
                 continue
 
             self.operator_monkeys[match.group(1)] = Operator(
@@ -175,14 +173,14 @@ class Monkeys:
         """
         operators = deepcopy(self.operator_monkeys)
         remaining_operators: dict[str, Operator] = {}
-        number_monkeys: dict[str, int | float | Unit] = dict(**self.number_monkeys)
+        number_monkeys: dict[str, int | Fraction | Unit] = dict(**self.number_monkeys)
 
         if solve_equation:
             # For Task02, we need root to be subtraction
             # and humn to be the variable (or polynomial) x
             op = operators["root"]
             operators["root"] = Operator(left=op.left, right=op.right, operator="-")
-            number_monkeys["humn"] = Unit(b=0, x=1)
+            number_monkeys["humn"] = Unit(b=Fraction(0), x=Fraction(1))
 
         # Iteratively try to perform operations until root contains a number
         # or a polynomial
@@ -205,8 +203,8 @@ class Monkeys:
         root = number_monkeys["root"]
         # For Task01, we just report root
         if not solve_equation:
-            assert isinstance(root, float)
-            assert int(root) == root
+            assert isinstance(root, Fraction)
+            assert root.denominator == 1
             return int(root)
 
         # Otherwise, we have to solve for x
@@ -215,8 +213,11 @@ class Monkeys:
         assert root.x != 0
         res = -root.b / root.x
         # Necessary, because of float errors...
-        assert abs(round(res) - res) < 1e-2
-        return round(res)
+        assert isinstance(res, Fraction)
+        assert res.denominator == 1
+        return int(res)
+        # assert abs(round(res) - res) < 1e-2
+        # return round(res)
 
     def inspect_reduced_operators(self) -> dict[str, Operator]:
         """Substitution reduction of system of equations
@@ -233,8 +234,8 @@ class Monkeys:
         """
         operators = {name: op for name, op in self.operator_monkeys.items()}
         operators["root"].operator = "-"
-        numbers: dict[str, float | Unit] = {
-            name: number
+        numbers: dict[str, Fraction | Unit] = {
+            name: Fraction(number)
             for name, number in self.number_monkeys.items()
             if name != "humn"
         }
@@ -250,7 +251,9 @@ class Monkeys:
                     operator.right = numbers[operator.right]
 
                 if operator.ready():
-                    numbers[name] = operator()
+                    res = operator()
+                    assert isinstance(res, (Fraction, Unit))
+                    numbers[name] = res
                     continue
 
                 remaining_operators[name] = operator
