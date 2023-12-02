@@ -2,3 +2,5 @@ mypy
 ruff
 black
 typer
+pytest
+loguru
