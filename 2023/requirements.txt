@@ -5,3 +5,4 @@ typer
 pytest
 loguru
 ipdb
+pre-commit
