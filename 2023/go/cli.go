@@ -11,6 +11,7 @@ import (
 var solutions = [...]func(string){
 	day01_solution,
 	day02_solution,
+	day03_solution,
 }
 
 

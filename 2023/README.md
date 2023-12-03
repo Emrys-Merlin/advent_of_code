@@ -31,12 +31,13 @@ python python/dayDD.py PATH_TO_INPUT
 ### Usage
 
 ```sh
-go run go/dayDD.go PATH_TO_INPUT
+go run ./go DAY PATH_TO_INPUT
 ```
-
+- `DAY` should be a number (1 - 25)
 ### State
 
 |Day|File| Task 1 | Task 2 |
 |:---:|:---:|:---:|:---:|
 | [01](https://adventofcode.com/2023/day/1)|[day01.go](./go/day01.go)| ⭐ | ⭐|
 | [02](https://adventofcode.com/2023/day/2)|[day02.go](./go/day02.go)| ⭐ | ⭐|
+| [03](https://adventofcode.com/2023/day/3)|[day03.go](./go/day03.go)| ⭐ | ⭐|
