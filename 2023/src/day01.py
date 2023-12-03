@@ -2,7 +2,6 @@ from pathlib import Path
 
 from loguru import logger
 from typer import Typer
-
 from utils import timer
 
 main = Typer()
@@ -14,6 +13,9 @@ def calibration(line: str) -> int:
     Identify first and larg integer in the string, multiplying the first by 10
     and summing them.
     """
+    if len(line.strip()) == 0:
+        return 0
+
     first: int | None = None
     last: int = -1
     for c in line:
