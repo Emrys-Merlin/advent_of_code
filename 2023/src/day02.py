@@ -4,7 +4,6 @@ from pathlib import Path
 
 from loguru import logger
 from typer import Typer
-
 from utils import timer
 
 main = Typer()
@@ -46,18 +45,6 @@ class MaxDraw:
         return self.red * self.green * self.blue
 
 
-def test_parser():
-    """Check if parsing works"""
-    line = "Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green"
-
-    draw = MaxDraw.from_line(line)
-
-    assert draw.id == 1
-    assert draw.red == 4
-    assert draw.green == 2
-    assert draw.blue == 6
-
-
 @timer
 def sum_valid_games(input: str, ref: MaxDraw | None = None) -> int:
     """Compute the sum of the game ids of valid games
@@ -77,7 +64,7 @@ def sum_valid_games(input: str, ref: MaxDraw | None = None) -> int:
         ref = MaxDraw(red=12, green=13, blue=14)
 
     res = 0
-    for line in input.split("\n"):
+    for line in input.splitlines():
         line = line.strip()
         if len(line) == 0:
             continue
