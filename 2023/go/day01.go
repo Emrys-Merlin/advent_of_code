@@ -2,11 +2,8 @@ package main
 
 import (
 	"fmt"
-	"os"
 	"strings"
 	"unicode"
-
-	"github.com/urfave/cli/v2"
 )
 
 func calibration(line string) int {
@@ -42,7 +39,7 @@ func replaceLetterNumbers(line string) string {
 	return string(res)
 }
 
-func task01(input string) int {
+func day01_task01(input string) int {
 	res := 0
 	for _, line := range strings.Split(input, "\n") {
 		res += calibration(line)
@@ -51,7 +48,7 @@ func task01(input string) int {
 	return res
 }
 
-func task02(input string) int {
+func day01_task02(input string) int {
 	res := 0
 	for _, line := range strings.Split(input, "\n") {
 		res += calibration(replaceLetterNumbers(line))
@@ -60,28 +57,7 @@ func task02(input string) int {
 	return res
 }
 
-func entrypoint(c *cli.Context) error {
-	path := c.Args().First()
-	input, err := os.ReadFile(path)
-
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Printf("Task 01: %d\n", task01(string(input)))
-	fmt.Printf("Task 02: %d\n", task02(string(input)))
-
-	return nil
-}
-
-func main() {
-	app := &cli.App{
-		Name: "day01",
-		Description: "Advent of Code 2023 - Day 01",
-		Action: entrypoint,
-	}
-
-	if err := app.Run(os.Args); err != nil {
-		panic(err)
-	}
+func day01_solution(input string) {
+	fmt.Printf("Task 01: %d\n", day01_task01(string(input)))
+	fmt.Printf("Task 02: %d\n", day01_task02(string(input)))
 }
