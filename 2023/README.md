@@ -39,3 +39,4 @@ go run go/dayDD.go PATH_TO_INPUT
 |Day|File| Task 1 | Task 2 |
 |:---:|:---:|:---:|:---:|
 | [01](https://adventofcode.com/2023/day/1)|[day01.go](./go/day01.go)| ⭐ | ⭐|
+| [02](https://adventofcode.com/2023/day/2)|[day02.go](./go/day02.go)| ⭐ | ⭐|
