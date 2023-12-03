@@ -113,15 +113,23 @@ class Schematic:
         engines: dict[tuple[int, int], list[Number]] = defaultdict(list)
 
         for row in range(self.n_rows):
+            # Reset number, neighbors, and engines
             value = 0
             neighbors: set[str] = set()
             is_number = False
             engine_set: set[tuple[int, int]] = set()
+
+            # Scan row for numbers
             for col in range(self.n_cols):
                 char = self[row, col]
                 if char.isdigit():
                     value = 10 * value + int(char)
                     is_number = True
+
+                    # Check neighbors for symbols
+                    # TODO: Could be made more efficient by only checking
+                    # the right 3 neighbors (except for the first column
+                    # where we also need top and bottom)
                     for t in self.get_symbol_neighbors(row, col):
                         symbol = self[t]
                         neighbors.add(symbol)
@@ -130,6 +138,9 @@ class Schematic:
 
                     continue
 
+                # If char is no digit, we have to check if we have a number
+                # that has to be added to the list
+                # Also add the number to the engine list, if it borders an engine
                 if is_number:
                     numbers.append(Number(value, neighbors))
                     for t in engine_set:
@@ -140,6 +151,7 @@ class Schematic:
                 is_number = False
                 engine_set = set()
 
+            # Necessary if number is at the end of the row
             if is_number:
                 numbers.append(Number(value, neighbors))
                 for t in engine_set:
