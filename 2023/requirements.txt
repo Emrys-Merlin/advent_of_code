@@ -4,3 +4,4 @@ black
 typer
 pytest
 loguru
+ipdb
