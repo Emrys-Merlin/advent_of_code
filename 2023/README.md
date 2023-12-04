@@ -42,3 +42,4 @@ go run ./go DAY PATH_TO_INPUT
 | [01](https://adventofcode.com/2023/day/1)|[day01.go](./go/day01.go)| ⭐ | ⭐|
 | [02](https://adventofcode.com/2023/day/2)|[day02.go](./go/day02.go)| ⭐ | ⭐|
 | [03](https://adventofcode.com/2023/day/3)|[day03.go](./go/day03.go)| ⭐ | ⭐|
+| [04](https://adventofcode.com/2023/day/4)|[day04.go](./go/day04.go)| ⭐ | ⭐|

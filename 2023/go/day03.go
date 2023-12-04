@@ -17,18 +17,6 @@ type Coord struct {
 }
 
 
-// https://stackoverflow.com/questions/34018908/golang-why-dont-we-have-a-set-datastructure
-func union[T comparable](s1, s2 map[T]bool) map[T]bool {
-	s_union := map[T]bool{}
-	for k := range s1{
-    	s_union[k] = true
-	}
-	for k := range s2{
-    	s_union[k] = true
-	}
-	return s_union
-}
-
 func is_symbol(r rune) bool {
 	return !unicode.IsDigit(r) && r != '.'
 }
