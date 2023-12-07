@@ -46,3 +46,5 @@ go run ./go DAY PATH_TO_INPUT
 | [02](https://adventofcode.com/2023/day/2)|[day02.go](./go/day02.go)| ⭐ | ⭐|
 | [03](https://adventofcode.com/2023/day/3)|[day03.go](./go/day03.go)| ⭐ | ⭐|
 | [04](https://adventofcode.com/2023/day/4)|[day04.go](./go/day04.go)| ⭐ | ⭐|
+| [05](https://adventofcode.com/2023/day/5)|[day05.go](./go/day05.go)|  | |
+| [06](https://adventofcode.com/2023/day/6)|[day06.go](./go/day06.go)| ⭐ | ⭐|
