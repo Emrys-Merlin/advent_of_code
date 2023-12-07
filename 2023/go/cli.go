@@ -15,6 +15,7 @@ var solutions = [...]func(string){
 	day04_solution,
 	day05_solution,
 	day06_solution,
+	day07_solution,
 }
 
 
