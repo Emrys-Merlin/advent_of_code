@@ -10,8 +10,8 @@ main = Typer()
 # Encode card values as hex
 # Allows lexicographic sorting on the string
 # [-1] is necessary to remove "0x" from e.g. hex(0) == "0x0"
-card_values = {card: hex(i)[-1] for i, card in enumerate("23456789TJQKA")}
-card_values_with_jokers = {card: hex(i)[-1] for i, card in enumerate("J23456789TQKA")}
+CARD_VALUES = {card: hex(i)[-1] for i, card in enumerate("23456789TJQKA")}
+CARD_VALUES_WITH_JOKERS = {card: hex(i)[-1] for i, card in enumerate("J23456789TQKA")}
 
 
 class Hand:
@@ -36,16 +36,17 @@ class Hand:
         # Also transform card values to hex
         counts = Counter(hand)
         if with_jokers:
-            self.card_values = "".join(card_values_with_jokers[card] for card in hand)
+            self.card_values = "".join(CARD_VALUES_WITH_JOKERS[card] for card in hand)
             self.jokers = counts["J"]
             del counts["J"]
         else:
-            self.card_values = "".join(card_values[card] for card in hand)
+            self.card_values = "".join(CARD_VALUES[card] for card in hand)
             self.jokers = 0
 
         self.counts = sorted(counts.values(), reverse=True)
+        self.type_value = self._type_value()
 
-    def type_value(self) -> int:
+    def _type_value(self) -> int:
         """Return the type value of the hand
 
         Jokers are taking into account
@@ -90,10 +91,10 @@ class Hand:
     def __lt__(self, other: "Hand") -> bool:
         # If both hands have the same type, we have to compare
         # card values lexicographically
-        if self.type_value() == other.type_value():
+        if self.type_value == other.type_value:
             return self.card_values < other.card_values
 
-        return self.type_value() < other.type_value()
+        return self.type_value < other.type_value
 
 
 @timer
