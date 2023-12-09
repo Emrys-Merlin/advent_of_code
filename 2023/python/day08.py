@@ -1,6 +1,5 @@
 import re
 from dataclasses import dataclass
-from heapq import heappop, heappushpop
 from math import lcm
 from pathlib import Path
 from typing import Literal
@@ -25,18 +24,77 @@ class Node:
         return self.right
 
 
-@dataclass
-class State:
-    """State for the iterative ghost path approach.
+def extended_euclidean_algo(a: int, b: int) -> tuple[int, int, int]:
+    """Extended Euclidean algorithm
 
-    Still way too slow, so will most likely be removed later.
+    Args:
+        a: First number
+        b: Second number
+
+    Returns:
+        (gcd(a, b), x, y) s.t. a * x + b * y = gcd(a, b)
     """
+    if a == 0:
+        return b, 0, 1
 
-    node: str
-    distance: int
+    gcd, x1, y1 = extended_euclidean_algo(b % a, a)
 
-    def __lt__(self, other: "State") -> bool:
-        return self.distance < other.distance
+    x = y1 - (b // a) * x1
+    y = x1
+
+    return gcd, x, y
+
+
+def lowest_positive_remainder(remainder: int, modulus: int) -> int:
+    """Compute lowest non-negative remainder
+
+    Args:
+        remainder: Remainder
+        modulus: Modulus
+
+    Returns:
+        Lowest non-negative remainder
+    """
+    while remainder < 0:
+        remainder += modulus
+
+    while remainder - modulus > 0:
+        remainder -= modulus
+
+    return remainder
+
+
+def chinese_remainder_theorem(
+    remainders: list[int], moduli: list[int]
+) -> tuple[int, int]:
+    """Chinese remainder theorem
+
+    Args:
+        a: List of remainders
+        n: List of moduli
+        length: Length of lists
+
+    Returns:
+        (x, m) s.t. x = a_i mod n_i for all i and m = lcm(n_i)
+    """
+    if len(remainders) == len(moduli) == 1:
+        return lowest_positive_remainder(remainders[0], moduli[0]), moduli[0]
+
+    a, n = remainders.pop(), moduli.pop()
+    b, m = remainders.pop(), moduli.pop()
+
+    gcd, x, _ = extended_euclidean_algo(n, m)
+    lcm = n * m // gcd
+
+    if (a - b) % gcd != 0:
+        raise ValueError("No solution exists")
+
+    a_new = a - x * (a - b) // gcd * n
+    a_new = lowest_positive_remainder(a_new, lcm)
+
+    remainders.append(a_new)
+    moduli.append(lcm)
+    return chinese_remainder_theorem(remainders, moduli)
 
 
 @dataclass
@@ -90,64 +148,6 @@ class Map:
             if current in end:
                 return i, current
 
-    def follow_ghost_path_brute_force(self) -> int:
-        """Brute force approach
-
-        We simply follow each path from start and check if
-        all of them end at the same time.
-
-        Way too slow for the actual task.
-
-        Returns:
-            Path length
-        """
-        current = set(node for node in self.graph.keys() if node[-1] == "A")
-        end = set(node for node in self.graph.keys() if node[-1] == "Z")
-
-        if current.issubset(end):
-            return 0
-
-        for i, instr in enumerate(self, 1):
-            current = set(self.graph[node][instr] for node in current)
-
-            if current.issubset(end):
-                return i
-
-    def follow_ghost_path_iterative(self) -> int:
-        """We walk the shortest path
-
-        Using a heap we extend the shortest path to the next
-        end node and check if all paths have reached the same
-        length.
-
-        Also way too slow
-
-        Returns:
-            Path length
-        """
-        ends = frozenset(node for node in self.graph.keys() if node[-1] == "Z")
-
-        heap = [
-            State(node=node, distance=0)
-            for node in self.graph.keys()
-            if node[-1] == "A"
-        ]
-
-        max_dist = -1
-        current = heappop(heap)
-        while True:
-            if current.distance == max_dist:
-                break
-
-            distance, new_node = self.follow_path(current.node, ends, ignore_first=True)
-
-            new_dist = current.distance + distance
-            max_dist = max(max_dist, new_dist)
-
-            current = heappushpop(heap, State(new_node, new_dist))
-
-        return max_dist
-
     def cycle_offset(self, start: str, ends: frozenset[str]) -> tuple[int, int]:
         """Compute the cycle length and the offset of a path
 
@@ -158,6 +158,9 @@ class Map:
         The method computes a cycle by checking when a path reaches
         the same end node a second time and saving the steps until
         the first and second occurence
+
+        Caution! This method assumes that a cycle containing
+        end points exists! Otherwise, infinite loop!
 
         Args:
             start: Start node
@@ -197,8 +200,7 @@ class Map:
         using tools from the Chinese remainder theorem (if the solution
         exists). The solution only exists if
         offset_i = offset_j mod gcd(cycle_length_i, cycle_length_j)
-        A solution can be constructed iteratively. This more general approach
-        has not been implemented yet.
+        A solution can be constructed iteratively.
 
         Returns:
             path length
@@ -214,16 +216,20 @@ class Map:
             cycles[node] = self.cycle_offset(node, end)
 
         # Check that the simplifying assumptions hold
-        if (
-            max(offset for _, offset in cycles.values())
-            != min(offset for _, offset in cycles.values())
-        ) and any(cycle != offset for cycle, offset in cycles.values()):
-            raise NotImplementedError(
-                "General chinese remainder approach not implemented yet."
-            )
+        # to compute length over least common multiple
+        if max(offset for _, offset in cycles.values()) == min(
+            offset for _, offset in cycles.values()
+        ):
+            _, offset = next(iter(cycles.values()))
+            return offset
 
-        # Compute path length via least common multiple
-        return lcm(*[cycle for cycle, _ in cycles.values()])
+        if all(cycle == offset for cycle, offset in cycles.values()):
+            return lcm(*[cycle for cycle, _ in cycles.values()])
+
+        moduli, remainders = list(zip(*cycles.values()))
+        return chinese_remainder_theorem(
+            remainders=list(remainders), moduli=list(moduli)
+        )[0]
 
 
 def parse_input(input: str) -> Map:
