@@ -6,3 +6,4 @@ pytest
 loguru
 ipdb
 pre-commit
+tqdm
