@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from day14 import Grid, task01
+from day14 import Grid, task01, task02
 from pytest import fixture
 
 
@@ -35,3 +35,7 @@ def test_spin_cycle(input1: str, ref: str):
 
 def test_task01(input1: str):
     assert task01(input1) == 136
+
+
+def test_task02(input1: str):
+    assert task02(input1, n_cycles=1_000_000_000) == 64
