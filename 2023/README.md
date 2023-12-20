@@ -37,6 +37,7 @@ python python/dayDD.py PATH_TO_INPUT
 | [17](https://adventofcode.com/2023/day/17)|[day17.py](./python/day17.py)| ⭐ | ⭐|
 | [18](https://adventofcode.com/2023/day/18)|[day18.py](./python/day18.py)| ⭐ | ⭐|
 | [19](https://adventofcode.com/2023/day/19)|[day19.py](./python/day19.py)| ⭐ | ⭐|
+| [20](https://adventofcode.com/2023/day/20)|[day20.py](./python/day20.py)| ⭐ | |
 
 ## Go
 
