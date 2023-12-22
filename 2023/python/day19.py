@@ -48,6 +48,10 @@ class Interval:
     def __len__(self) -> int:
         return self.right - self.left
 
+    def range(self) -> Iterator[int]:
+        """Iterate over interval"""
+        yield from range(self.left, self.right)
+
     def split(self, mid: int, mid_to_left: bool = False) -> Iterator["Interval"]:
         """Split interval at mid
 
