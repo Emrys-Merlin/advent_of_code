@@ -1,6 +1,6 @@
 from datetime import datetime as dt
 from datetime import timedelta
-from typing import Callable
+from typing import Callable, Iterator
 
 from loguru import logger
 
@@ -31,3 +31,9 @@ def timer(func: Callable) -> Callable:
         return res
 
     return inner
+
+
+def generate_diamond(radius: int) -> Iterator[tuple[int, int]]:
+    for t in range(-radius, radius + 1):
+        yield (t, radius - abs(t))
+        yield (t, -(radius - abs(t)))
