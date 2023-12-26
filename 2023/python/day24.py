@@ -1,3 +1,5 @@
+import os
+import sys
 from dataclasses import dataclass
 from fractions import Fraction
 from pathlib import Path
@@ -26,6 +28,9 @@ class Vector:
 
     def __mul__(self, other: int) -> "Vector":
         return Vector(self.x * other, self.y * other, self.z * other)
+
+    def __rmul__(self, other: int) -> "Vector":
+        return self * other
 
     def __abs__(self) -> int:
         return abs(self.x) + abs(self.y) + abs(self.z)
@@ -422,7 +427,32 @@ def check_time_step(t: Fraction, lines: list[Line]) -> tuple[int, Line | None]:
     if not isinstance(intersection1, Vector):
         raise NotImplementedError("Intersection is a line")
 
+    # line2_normal = plane.normal.cross(line2.direction)
+    # if line2_normal.dot(intersection1 - line2.base) > 0:
+    #     sign = 1
+    # else:
+    #     sign = -1
+
     candidate_line = Line.from_points(point, intersection1)
+
+    intersection_mid = candidate_line.intersection(line2)
+    if not isinstance(intersection_mid, Vector):
+        raise NotImplementedError("Intersection is a line")
+
+    t = line2.closest_point(intersection_mid)[0]
+    lookup = {"point1": 0, "intersection1": 1, "line2": t}
+    order = tuple(sorted(["point1", "intersection1", "line2"], key=lambda x: lookup[x]))
+    if order not in [
+        ("point1", "intersection1", "line2"),
+        ("point1", "line2", "intersection1"),
+        ("line2", "point1", "intersection1"),
+    ]:
+        logger.debug(f"{order=}")
+        breakpoint()
+    sign = 1
+    if t < 1:
+        sign = -1
+        candidate_line = Line(candidate_line.base, -1 * candidate_line.direction)
 
     normal_in_plane = plane.normal.cross(candidate_line.direction)
 
@@ -433,9 +463,9 @@ def check_time_step(t: Fraction, lines: list[Line]) -> tuple[int, Line | None]:
 
     res = normal_in_plane.dot(intersection2 - point)
     if res < 0:
-        return -1, None
+        return -1 * sign, None
     elif res > 0:
-        return 1, None
+        return 1 * sign, None
 
     return 0, candidate_line
 
@@ -467,17 +497,24 @@ def find_intesecting_line(lines: list[Line], t_hi_min: int = 1_000_000_000) -> L
     while check_time_step(t_hi, lines)[0] == sign_lo:
         t_hi *= 2
 
+    logger.debug(f"{t_lo=}\t{t_hi=}\t{sign_lo=}")
+
     while t_hi - t_lo > 1:
         t_mid = (t_lo + t_hi) // 2
         sign_mid, candidate_line = check_time_step(t_mid, lines)
 
+        logger.debug(f"{t_lo=}\t{t_hi=}\t{t_mid=}\t{sign_mid=}")
+
         if sign_mid == 0 and isinstance(candidate_line, Line):
+            logger.debug(f"Found intersecting line at t={t_mid}")
             return reparametrize(candidate_line, lines[0], lines[1])
 
         if sign_mid == sign_lo:
             t_lo = t_mid
         else:
             t_hi = t_mid
+
+    logger.debug(f"{t_lo=}\t{t_hi=}\t{t_mid=}")
 
     raise ValueError("No intersecting line found (at integer time steps)")
 
@@ -543,9 +580,17 @@ def task02(input: str, t_hi_min: int = 1_000_000_000) -> int:
     """
     lines = parse_input(input)
 
-    intersecting_line = find_intesecting_line(lines, t_hi_min=t_hi_min)
-    base = intersecting_line.base
+    # shuffle(lines)
 
+    intersecting_line = find_intesecting_line(lines, t_hi_min=t_hi_min)
+
+    if int(os.getenv("DEBUG", "0")) > 0:
+        for i, line in enumerate(lines, 1):
+            point = line.intersection(intersecting_line)
+            t = int(intersecting_line.closest_point(point)[0])
+            logger.debug(f"{i=}: {t=}\t{point=} ")
+
+    base = intersecting_line.base
     return base.x + base.y + base.z
 
 
@@ -560,4 +605,7 @@ def entrypoint(path: Path):
 
 
 if __name__ == "__main__":
+    if int(os.environ.get("DEBUG", "0")) > 0:
+        logger.remove()
+        logger.add(sys.stderr, level="DEBUG")
     main()
