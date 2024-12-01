@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "rust"
+		},
+		{
+			"path": "examples"
+		},
+		{
+			"path": "inputs"
+		}
+	],
+	"settings": {}
+}
