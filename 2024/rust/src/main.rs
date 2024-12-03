@@ -4,6 +4,7 @@ use std::path::Path;
 use std::collections::HashMap;
 mod day01;
 mod day02;
+mod day03;
 
 pub fn get_task_map() -> HashMap<(i32, i32), fn(&str) -> String> {
     let mut task_map: HashMap<(i32, i32), fn(&str) -> String> = HashMap::new();
@@ -11,6 +12,8 @@ pub fn get_task_map() -> HashMap<(i32, i32), fn(&str) -> String> {
     task_map.insert((1, 2), day01::task02);
     task_map.insert((2, 1), day02::task01);
     task_map.insert((2, 2), day02::task02);
+    task_map.insert((3, 1), day03::task01);
+    task_map.insert((3, 2), day03::task02);
     task_map
 }
 
