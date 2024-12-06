@@ -5,6 +5,8 @@ use std::collections::HashMap;
 mod day01;
 mod day02;
 mod day03;
+//mod day04;
+mod day05;
 
 pub fn get_task_map() -> HashMap<(i32, i32), fn(&str) -> String> {
     let mut task_map: HashMap<(i32, i32), fn(&str) -> String> = HashMap::new();
@@ -14,6 +16,10 @@ pub fn get_task_map() -> HashMap<(i32, i32), fn(&str) -> String> {
     task_map.insert((2, 2), day02::task02);
     task_map.insert((3, 1), day03::task01);
     task_map.insert((3, 2), day03::task02);
+    // task_map.insert((4, 1), day04::task01);
+    // task_map.insert((4, 2), day04::task02);
+    task_map.insert((5, 1), day05::task01);
+    task_map.insert((5, 2), day05::task02);
     task_map
 }
 
