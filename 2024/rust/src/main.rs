@@ -7,6 +7,7 @@ mod day02;
 mod day03;
 mod day04;
 mod day05;
+mod day06;
 
 pub fn get_task_map() -> HashMap<(i32, i32), fn(&str) -> String> {
     let mut task_map: HashMap<(i32, i32), fn(&str) -> String> = HashMap::new();
@@ -20,6 +21,8 @@ pub fn get_task_map() -> HashMap<(i32, i32), fn(&str) -> String> {
     task_map.insert((4, 2), day04::task02);
     task_map.insert((5, 1), day05::task01);
     task_map.insert((5, 2), day05::task02);
+    task_map.insert((6, 1), day06::task01);
+    task_map.insert((6, 2), day06::task02);
     task_map
 }
 
