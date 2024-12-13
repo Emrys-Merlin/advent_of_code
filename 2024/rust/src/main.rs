@@ -12,6 +12,7 @@ mod day07;
 mod day08;
 mod day09;
 mod day10;
+mod day11;
 mod day12;
 mod day13;
 
@@ -37,6 +38,8 @@ pub fn get_task_map() -> HashMap<(i32, i32), fn(&str) -> String> {
     task_map.insert((9, 2), day09::task02);
     task_map.insert((10, 1), day10::task01);
     task_map.insert((10, 2), day10::task02);
+    task_map.insert((11, 1), day11::task01);
+    task_map.insert((11, 2), day11::task02);
     task_map.insert((12, 1), day12::task01);
     task_map.insert((12, 2), day12::task02);
     task_map.insert((13, 1), day13::task01);
