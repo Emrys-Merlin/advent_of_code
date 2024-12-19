@@ -26,6 +26,19 @@ impl Direction {
             Direction::W => Direction::N,
         }
     }
+
+    pub fn mirror(&self) -> Self {
+        match self {
+            Direction::N => Direction::S,
+            Direction::E => Direction::W,
+            Direction::S => Direction::N,
+            Direction::W => Direction::E,
+        }
+    }
+
+    pub fn all() -> Vec<Self> {
+        vec![Direction::N, Direction::E, Direction::S, Direction::W]
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -114,97 +127,62 @@ impl Grid {
     }).collect()
     }
 
-    fn n_valid_neighbors(&self, pos: &Point) -> usize {
-        [Direction::N, Direction::E, Direction::S, Direction::W].iter().filter(|&dir| {
-            let new_pos = pos.step(*dir);
-            match new_pos {
-                Some(new_pos) => !self.walls.contains(&new_pos),
-                None => false,
+    pub fn shortest_distances(&self, start_point: Point, start_direction: Direction) -> HashMap<(Point, Direction), usize> {
+        let mut distance= HashMap::new();
+        let mut heap = BinaryHeap::from([State { pos: start_point, dir: start_direction, cost: 0}]);
+
+        while let Some(current) = heap.pop() {
+            if distance.contains_key(&(current.pos, current.dir)) {
+                continue;
             }
-        }).count()
+
+            distance.insert((current.pos, current.dir), current.cost);
+
+            for child in self.new_states(&current) {
+                heap.push( child );
+            }
+        }
+        distance
     }
 
     pub fn shortest_path(&self) -> Option<usize> {
-        let mut visited = HashSet::new();
-        let mut heap = BinaryHeap::from([State { pos: self.start, dir: Direction::E, cost: 0}]);
+        let distances = self.shortest_distances(self.start, Direction::E);
 
-        while let Some(current) = heap.pop() {
-            if current.pos == self.end {
-                return Some(current.cost);
+        Direction::all().iter().filter_map(|&dir| {
+            match distances.get(&(self.end, dir)) {
+                Some(&distance) => Some(distance),
+                None => None,
             }
-
-            if !visited.insert((current.pos, current.dir)) {
-                continue;
-            }
-
-            for child in self.new_states(&current) {
-                heap.push( child );
-            }
-        }
-        None
+        }).min()
     }
 
-    pub fn shortest_path_with_chain(&self, start: State) -> (usize, HashSet<State>) {
-        let mut visited = HashSet::new();
-        let mut heap = BinaryHeap::from([start]);
-        let mut parent = HashMap::new();
+    // Based on idea by @jenuk
+    pub fn points_on_shortest_path(&self) -> usize {
+        let forward_distances = self.shortest_distances(self.start, Direction::E);
 
-        let mut chain = HashSet::new();
-        let mut cost = 0;
-        while let Some(current) = heap.pop() {
-            if current.pos == self.end {
-                let mut current = current;
-                cost = current.cost;
-                while let Some(parent) = parent.get(&current) {
-                    chain.insert(current);
-                    current = *parent;
-                }
-                chain.insert(current);
-                break
+        let end_direction = Direction::all().iter().filter_map(|&dir| {
+            match forward_distances.get(&(self.end, dir)) {
+                Some(&distance) => Some((dir, distance)),
+                None => None,
             }
+        }).min_by_key(|&(_, distance)| distance).unwrap().0;
 
-            if !visited.insert((current.pos, current.dir)) {
-                continue;
-            }
+        let backward_distances = self.shortest_distances(self.end, end_direction.mirror());
 
-            for child in self.new_states(&current) {
-                heap.push( child );
-                parent.insert(child, current);
+        HashSet::<Point>::from_iter(forward_distances.iter().filter_map(|((point, direction), &distance)| {
+            match backward_distances.get(&(*point, direction.mirror())) {
+                Some(&backward_distance) => { if distance + backward_distance == forward_distances[&(self.end, end_direction)] {
+                        Some(*point)
+                    } else {
+                        None
+                    }
+                },
+                None => None,
             }
-        }
-        (cost, chain)
+        })).len()
     }
 
-    pub fn count_all_shortest_paths(&self) -> usize {
-        let start_state = State { pos: self.start, dir: Direction::E, cost: 0};
-        let (cost, mut chain) = self.shortest_path_with_chain(start_state);
-        println!("Cost: {}", cost);
-        let mut visited = chain.clone();
-        while chain.len() != 0{
-            let current = chain.iter().next().cloned().unwrap();
-            chain.remove(&current);
-
-            if self.n_valid_neighbors(&current.pos) <= 2 {
-                continue;
-            }
-
-            for new_state in self.new_states(&current) {
-                if visited.contains(&new_state) {
-                    continue;
-                }
-                let (new_cost, new_chain) = self.shortest_path_with_chain(new_state);
-                if new_cost == cost {
-                    chain = chain.union(&new_chain).cloned().collect();
-                    visited = visited.union(&new_chain).cloned().collect();
-                }
-            }
-        }
-        let visited_points: HashSet<Point> = HashSet::from_iter(visited.iter().map(|state| state.pos));
-        self.print_maze(&visited_points);
-        visited_points.len()
-
-    }
-
+    #[allow(dead_code)]
     fn print_maze(&self, visited: &HashSet<Point>) {
         let (n_rows, n_cols) = self.walls.iter().fold((0, 0), |(max_row, max_col), point| {
             (max_row.max(point.row+1), max_col.max(point.col+1))
@@ -237,7 +215,5 @@ pub fn task01(input: &str) -> String {
 
 pub fn task02(input: &str) -> String {
     let grid = Grid::from_input(input);
-    // grid.count_tiles_on_shortest_paths_dfs().unwrap().to_string()
-    println!("Caution super inefficient. Takes up to 3 min on my machine.");
-    grid.count_all_shortest_paths().to_string()
+    grid.points_on_shortest_path().to_string()
 }
