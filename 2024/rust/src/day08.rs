@@ -1,5 +1,5 @@
-use std::collections::{HashMap,HashSet};
 use std::cmp::max;
+use std::collections::{HashMap, HashSet};
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
 struct Point {
@@ -23,7 +23,7 @@ impl Point {
     }
 }
 
-#[derive(Debug, Clone, Eq, PartialEq,)]
+#[derive(Debug, Clone, Eq, PartialEq)]
 struct Grid {
     n_rows: i32,
     n_cols: i32,
@@ -32,20 +32,28 @@ struct Grid {
 
 impl Grid {
     fn contains(&self, point: &Point) -> bool {
-        0 <= point.col && point.col < self.n_cols && 0 <= point.row &&  point.row < self.n_rows
+        0 <= point.col && point.col < self.n_cols && 0 <= point.row && point.row < self.n_rows
     }
     fn get_antinode(&self, antenna: char, with_harmonics: bool) -> Option<HashSet<Point>> {
         let points = self.antennas.get(&antenna)?;
         let mut result = HashSet::new();
-        let steps = if with_harmonics { max(self.n_cols, self.n_cols) } else { 1 };
+        let steps = if with_harmonics {
+            max(self.n_cols, self.n_cols)
+        } else {
+            1
+        };
 
         for p in points.iter() {
             for q in points.iter() {
                 if p == q {
                     continue;
                 }
-                let delta =  p.minus(q);
-                let mut candidate = if with_harmonics { p.clone() } else { p.plus(&delta) };
+                let delta = p.minus(q);
+                let mut candidate = if with_harmonics {
+                    p.clone()
+                } else {
+                    p.plus(&delta)
+                };
 
                 for _ in 0..steps {
                     if self.contains(&candidate) {
@@ -86,7 +94,10 @@ fn parse_input(input: &str) -> Grid {
         for (col, c) in line.chars().enumerate() {
             let signed_col = i32::try_from(col).expect("Too many rolumns for i32");
             if c != '.' {
-                antennas.entry(c).or_insert(Vec::new()).push(Point { row: signed_row, col: signed_col });
+                antennas.entry(c).or_insert(Vec::new()).push(Point {
+                    row: signed_row,
+                    col: signed_col,
+                });
             }
         }
     }

@@ -19,7 +19,8 @@ struct Claw {
 
 impl Claw {
     pub fn det(&self) -> isize {
-        self.button_a.x as isize * self.button_b.y as isize - self.button_a.y as isize * self.button_b.x as isize
+        self.button_a.x as isize * self.button_b.y as isize
+            - self.button_a.y as isize * self.button_b.x as isize
     }
 
     pub fn solve_equation(&self) -> Option<(usize, usize)> {
@@ -28,8 +29,10 @@ impl Claw {
             return None;
         }
 
-        let det_x = self.win_position.x as isize * self.button_b.y as isize - self.win_position.y as isize * self.button_b.x as isize;
-        let det_y = self.button_a.x as isize * self.win_position.y as isize - self.button_a.y as isize * self.win_position.x as isize;
+        let det_x = self.win_position.x as isize * self.button_b.y as isize
+            - self.win_position.y as isize * self.button_b.x as isize;
+        let det_y = self.button_a.x as isize * self.win_position.y as isize
+            - self.button_a.y as isize * self.win_position.x as isize;
 
         if det_x % det != 0 || det_y % det != 0 {
             return None;
@@ -46,7 +49,6 @@ impl Claw {
         let (x, y) = self.solve_equation()?;
         Some(x * self.cost_a + y * self.cost_b)
     }
-
 }
 
 fn parse_line(line: &str) -> Point {
@@ -76,7 +78,10 @@ fn parse_input(input: &str, task02: bool) -> Vec<Claw> {
             2 => {
                 win_position = parse_line(line);
                 if task02 {
-                    win_position = Point { x: win_position.x + OFFSET, y: win_position.y + OFFSET };
+                    win_position = Point {
+                        x: win_position.x + OFFSET,
+                        y: win_position.y + OFFSET,
+                    };
                 }
             }
             3 => {
@@ -87,10 +92,9 @@ fn parse_input(input: &str, task02: bool) -> Vec<Claw> {
                     cost_a,
                     cost_b,
                 });
-            },
+            }
             _ => unreachable!(),
         }
-
     }
     claws.push(Claw {
         button_a: point_a,
@@ -106,11 +110,19 @@ fn parse_input(input: &str, task02: bool) -> Vec<Claw> {
 pub fn task01(input: &str) -> String {
     let claws = parse_input(input, false);
 
-    claws.iter().filter_map(|claw| claw.cost()).sum::<usize>().to_string()
+    claws
+        .iter()
+        .filter_map(|claw| claw.cost())
+        .sum::<usize>()
+        .to_string()
 }
 
 pub fn task02(input: &str) -> String {
     let claws = parse_input(input, true);
 
-    claws.iter().filter_map(|claw| claw.cost()).sum::<usize>().to_string()
+    claws
+        .iter()
+        .filter_map(|claw| claw.cost())
+        .sum::<usize>()
+        .to_string()
 }

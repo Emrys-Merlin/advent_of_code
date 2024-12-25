@@ -30,14 +30,13 @@ impl Direction {
 #[derive(Clone)]
 pub struct Point {
     x: usize,
-    y: usize
+    y: usize,
 }
-
 
 pub struct Matrix {
     pub cells: Vec<Vec<char>>,
     pub cols: usize,
-    pub rows: usize
+    pub rows: usize,
 }
 
 impl Matrix {
@@ -45,13 +44,13 @@ impl Matrix {
         self.cells[point.y][point.x]
     }
 
-    fn neighbor(&self, point: &Point, direction: Direction)  -> Option<Point> {
+    fn neighbor(&self, point: &Point, direction: Direction) -> Option<Point> {
         match direction {
             Direction::N => {
                 let x = point.x;
-                let y= point.y.checked_sub(1)?;
+                let y = point.y.checked_sub(1)?;
                 Some(Point { x, y })
-            },
+            }
             Direction::E => {
                 let x = if point.x + 1 < self.cols {
                     point.x + 1
@@ -59,36 +58,36 @@ impl Matrix {
                     return None;
                 };
                 Some(Point { x, y: point.y })
-            },
-            Direction::S  => {
+            }
+            Direction::S => {
                 let y = if point.y + 1 < self.rows {
                     point.y + 1
                 } else {
                     return None;
                 };
                 Some(Point { x: point.x, y })
-            },
+            }
             Direction::W => {
                 let x = point.x.checked_sub(1)?;
-                let y= point.y;
+                let y = point.y;
                 Some(Point { x, y })
-            },
+            }
             Direction::NE => {
                 let point_east = self.neighbor(point, Direction::E)?;
                 self.neighbor(&point_east, Direction::N)
-            },
+            }
             Direction::SE => {
                 let point_east = self.neighbor(point, Direction::E)?;
                 self.neighbor(&point_east, Direction::S)
-            },
+            }
             Direction::SW => {
-                let point_west =  self.neighbor(point, Direction::W)?;
+                let point_west = self.neighbor(point, Direction::W)?;
                 self.neighbor(&point_west, Direction::S)
-            },
+            }
             Direction::NW => {
-                let point_west =  self.neighbor(point, Direction::W)?;
+                let point_west = self.neighbor(point, Direction::W)?;
                 self.neighbor(&point_west, Direction::N)
-            },
+            }
         }
     }
 }
@@ -108,11 +107,7 @@ fn parse_input(input: &str) -> Matrix {
     let rows = cells.len();
     let cols = cells[0].len();
 
-    Matrix {
-        cells,
-        rows,
-        cols,
-    }
+    Matrix { cells, rows, cols }
 }
 
 const CHARS: [char; 3] = ['M', 'A', 'S'];
@@ -131,14 +126,14 @@ fn count_xmas(matrix: &Matrix, point: Point) -> usize {
                     if *char != current_char {
                         break;
                     }
-                },
+                }
                 None => {
                     break;
-                },
+                }
             }
 
             if i == CHARS.len() - 1 {
-                counter +=1;
+                counter += 1;
             }
         }
     }
@@ -146,22 +141,32 @@ fn count_xmas(matrix: &Matrix, point: Point) -> usize {
 }
 
 fn count_part_2(matrix: &Matrix, point: Point) -> usize {
-    let matches = [[Direction::SE, Direction::NW], [Direction::SW, Direction::NE]]
-        .iter()
-        .filter(|pair| {
-            let mut chars: Vec<char> = pair.iter().filter_map(|dir| {
-                let this_point =matrix.neighbor(&point, *dir)?;
+    let matches = [
+        [Direction::SE, Direction::NW],
+        [Direction::SW, Direction::NE],
+    ]
+    .iter()
+    .filter(|pair| {
+        let mut chars: Vec<char> = pair
+            .iter()
+            .filter_map(|dir| {
+                let this_point = matrix.neighbor(&point, *dir)?;
                 Some(matrix.get(&this_point))
-            }
-            ).collect();
-    
-            chars.sort();
-    
-            chars.len() == 2 && chars[0] == 'M' && chars[1] == 'S'
-        })
-        .count() == 2;
+            })
+            .collect();
 
-    if matches { 1 } else { 0 }
+        chars.sort();
+
+        chars.len() == 2 && chars[0] == 'M' && chars[1] == 'S'
+    })
+    .count()
+        == 2;
+
+    if matches {
+        1
+    } else {
+        0
+    }
 }
 
 pub fn task01(input: &str) -> String {

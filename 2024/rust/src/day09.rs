@@ -1,4 +1,3 @@
-
 #[derive(Debug)]
 struct Interval {
     start: usize,
@@ -17,7 +16,7 @@ impl Interval {
         self.end = idx + delta;
     }
 
-    pub fn shorten(&mut self, delta: usize) -> bool{
+    pub fn shorten(&mut self, delta: usize) -> bool {
         if delta > self.len() {
             return false;
         }
@@ -56,7 +55,6 @@ fn parse_input01(input: &str) -> (Vec<(usize, usize)>, Vec<usize>) {
             }
             content_idx += 1;
         }
-
     }
     filesystem.reverse();
     (filesystem, empty_spaces)
@@ -73,10 +71,18 @@ fn parse_input02(input: &str) -> (Vec<Interval>, Vec<Interval>) {
         let size = character.to_string().parse::<usize>().unwrap();
         if empty {
             empty = false;
-            empty_blocks.push(Interval { start: fs_idx, end: fs_idx + size, idx: None });
+            empty_blocks.push(Interval {
+                start: fs_idx,
+                end: fs_idx + size,
+                idx: None,
+            });
         } else {
             empty = true;
-            blocks.push(Interval { start: fs_idx, end: fs_idx + size, idx: Some(content_idx) });
+            blocks.push(Interval {
+                start: fs_idx,
+                end: fs_idx + size,
+                idx: Some(content_idx),
+            });
             content_idx += 1;
         }
         fs_idx += size
@@ -97,7 +103,11 @@ pub fn task01(input: &str) -> String {
 
     filesystem.sort_by(|a, b| a.0.cmp(&b.0));
 
-    filesystem.iter().map(|(fs_idx, content_idx)| *fs_idx**content_idx).sum::<usize>().to_string()
+    filesystem
+        .iter()
+        .map(|(fs_idx, content_idx)| *fs_idx * *content_idx)
+        .sum::<usize>()
+        .to_string()
 }
 
 pub fn task02(input: &str) -> String {
@@ -118,5 +128,9 @@ pub fn task02(input: &str) -> String {
 
     blocks.sort_by(|a, b| a.start.cmp(&b.start));
 
-    blocks.iter().map(|block| block.checksum().unwrap()).sum::<usize>().to_string()
+    blocks
+        .iter()
+        .map(|block| block.checksum().unwrap())
+        .sum::<usize>()
+        .to_string()
 }

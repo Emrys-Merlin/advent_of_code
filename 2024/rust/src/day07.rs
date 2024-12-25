@@ -1,4 +1,3 @@
-
 fn parse_input(input: &str) -> Vec<(usize, Vec<usize>)> {
     let mut result = Vec::new();
     for line in input.lines() {
@@ -8,7 +7,11 @@ fn parse_input(input: &str) -> Vec<(usize, Vec<usize>)> {
         }
         let (test_str, list_str) = trimmed_line.split_once(":").unwrap();
         let test = test_str.parse::<usize>().unwrap();
-        let list = list_str.trim().split(' ').map(|x| x.parse::<usize>().unwrap()).collect();
+        let list = list_str
+            .trim()
+            .split(' ')
+            .map(|x| x.parse::<usize>().unwrap())
+            .collect();
         result.push((test, list));
     }
     result
@@ -39,13 +42,17 @@ struct State {
 }
 
 fn check_test(test_result: &usize, test: &Vec<usize>, operators: &Vec<Operator>) -> bool {
-    let mut stack: Vec<State> = Vec::from([State { result: 0, idx: 0, operator: Operator::Add }]);
+    let mut stack: Vec<State> = Vec::from([State {
+        result: 0,
+        idx: 0,
+        operator: Operator::Add,
+    }]);
 
     while stack.len() > 0 {
         let state = stack.pop().unwrap();
         if state.result == *test_result && state.idx == test.len() {
             return true;
-        }   
+        }
 
         if state.result > *test_result || state.idx >= test.len() {
             continue;
@@ -55,7 +62,11 @@ fn check_test(test_result: &usize, test: &Vec<usize>, operators: &Vec<Operator>)
         let new_result = state.operator.exec(state.result, value);
         let new_idx = state.idx + 1;
         for operator in operators.iter() {
-            let new_state = State { result: new_result, idx: new_idx, operator: operator.clone() };
+            let new_state = State {
+                result: new_result,
+                idx: new_idx,
+                operator: operator.clone(),
+            };
             stack.push(new_state);
         }
     }
@@ -65,13 +76,17 @@ fn check_test(test_result: &usize, test: &Vec<usize>, operators: &Vec<Operator>)
 fn task(input: &str, operators: &Vec<Operator>) -> String {
     let tests = parse_input(input);
 
-    tests.iter().filter_map(|(test_result, test)| {
-        if check_test(test_result, test, operators) {
-            Some(test_result)
-        } else {
-            None
-        }
-    }).sum::<usize>().to_string()
+    tests
+        .iter()
+        .filter_map(|(test_result, test)| {
+            if check_test(test_result, test, operators) {
+                Some(test_result)
+            } else {
+                None
+            }
+        })
+        .sum::<usize>()
+        .to_string()
 }
 
 pub fn task01(input: &str) -> String {

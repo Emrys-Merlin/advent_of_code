@@ -1,4 +1,3 @@
-
 fn parse_input(input: &str) -> (Vec<[usize; 5]>, Vec<[usize; 5]>) {
     let mut locks = Vec::new();
     let mut keys = Vec::new();
@@ -14,12 +13,12 @@ fn parse_input(input: &str) -> (Vec<[usize; 5]>, Vec<[usize; 5]>) {
                     keys.push(key_or_lock);
                 }
                 key_or_lock = [0; 5];
-                continue
-            },
+                continue;
+            }
             0 => {
                 is_lock = line.starts_with("#");
-            },
-            _ => { },
+            }
+            _ => {}
         }
 
         for (j, char) in line.chars().enumerate() {
@@ -36,25 +35,21 @@ fn parse_input(input: &str) -> (Vec<[usize; 5]>, Vec<[usize; 5]>) {
     }
 
     (locks, keys)
-
 }
 
 fn add_up(lock: &[usize; 5], key: &[usize; 5]) -> bool {
-    (0..5).all(|i| {
-        lock[i] + key[i] <= 7
-    })
+    (0..5).all(|i| lock[i] + key[i] <= 7)
 }
 
 pub fn task01(input: &str) -> String {
     let (locks, keys) = parse_input(input);
 
-    locks.iter().flat_map(|lock| {
-        keys.iter().filter_map(move |key| {
-            if add_up(lock, key) {
-                Some(true)
-            } else {
-                None
-            }
+    locks
+        .iter()
+        .flat_map(|lock| {
+            keys.iter()
+                .filter_map(move |key| if add_up(lock, key) { Some(true) } else { None })
         })
-    }).count().to_string()
+        .count()
+        .to_string()
 }

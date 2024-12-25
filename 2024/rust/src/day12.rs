@@ -1,4 +1,4 @@
-use std::collections::{HashMap,HashSet};
+use std::collections::{HashMap, HashSet};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 enum Direction {
@@ -37,31 +37,50 @@ struct Grid {
 
 impl Grid {
     pub fn parse_input(input: &str) -> Self {
-        let grid: Vec<Vec<char>> = input.lines().filter_map(|line| {
-            if line.is_empty() {
-                None
-            } else {
-                Some(line.chars().collect())
-            }
-        }).collect();
+        let grid: Vec<Vec<char>> = input
+            .lines()
+            .filter_map(|line| {
+                if line.is_empty() {
+                    None
+                } else {
+                    Some(line.chars().collect())
+                }
+            })
+            .collect();
         let n_rows = grid.len();
         let n_cols = grid[0].len();
-        Self { grid, n_rows, n_cols }
+        Self {
+            grid,
+            n_rows,
+            n_cols,
+        }
     }
 
     pub fn neighbors(&self, point: &Point) -> Vec<Point> {
         let mut neighbors = Vec::new();
         if point.row > 0 {
-            neighbors.push(Point { row: point.row - 1, col: point.col });
+            neighbors.push(Point {
+                row: point.row - 1,
+                col: point.col,
+            });
         }
         if point.row < self.n_rows - 1 {
-            neighbors.push(Point { row: point.row + 1, col: point.col });
+            neighbors.push(Point {
+                row: point.row + 1,
+                col: point.col,
+            });
         }
         if point.col > 0 {
-            neighbors.push(Point { row: point.row, col: point.col - 1 });
+            neighbors.push(Point {
+                row: point.row,
+                col: point.col - 1,
+            });
         }
         if point.col < self.n_cols - 1 {
-            neighbors.push(Point { row: point.row, col: point.col + 1 });
+            neighbors.push(Point {
+                row: point.row,
+                col: point.col + 1,
+            });
         }
         neighbors
     }
@@ -76,9 +95,7 @@ impl Grid {
 
     pub fn area_perimeter(&self) -> usize {
         let mut not_visited: HashSet<Point> = HashSet::from_iter(
-            (0..self.n_rows).flat_map(|row| {
-                (0..self.n_cols).map(move |col| Point {row, col })
-            })
+            (0..self.n_rows).flat_map(|row| (0..self.n_cols).map(move |col| Point { row, col })),
         );
 
         let mut result = 0;
@@ -112,9 +129,7 @@ impl Grid {
 
     pub fn area_side(&self) -> usize {
         let mut not_visited: HashSet<Point> = HashSet::from_iter(
-            (0..self.n_rows).flat_map(|row| {
-                (0..self.n_cols).map(move |col| Point {row, col })
-            })
+            (0..self.n_rows).flat_map(|row| (0..self.n_cols).map(move |col| Point { row, col })),
         );
 
         let mut result = 0;
@@ -132,11 +147,12 @@ impl Grid {
                 for neighbor in self.neighbors(&current) {
                     if self.get(&neighbor).unwrap() != plant_type {
                         let direction = Direction::edge(&current, &neighbor);
-                        let (outer, inner) = if direction == Direction::N || direction == Direction::S {
-                            (current.row, current.col)
-                        } else {
-                            (current.col, current.row)
-                        };
+                        let (outer, inner) =
+                            if direction == Direction::N || direction == Direction::S {
+                                (current.row, current.col)
+                            } else {
+                                (current.col, current.row)
+                            };
                         edges.entry((direction, outer)).or_default().insert(inner);
                     } else {
                         if not_visited.remove(&neighbor) {
@@ -145,37 +161,49 @@ impl Grid {
                     }
                 }
                 if current.col == 0 {
-                    edges.entry((Direction::W, current.col)).or_default().insert(current.row);
+                    edges
+                        .entry((Direction::W, current.col))
+                        .or_default()
+                        .insert(current.row);
                 }
                 if current.col + 1 == self.n_cols {
-                    edges.entry((Direction::E, current.col)).or_default().insert(current.row);
+                    edges
+                        .entry((Direction::E, current.col))
+                        .or_default()
+                        .insert(current.row);
                 }
                 if current.row == 0 {
-                    edges.entry((Direction::N, current.row)).or_default().insert(current.col);
+                    edges
+                        .entry((Direction::N, current.row))
+                        .or_default()
+                        .insert(current.col);
                 }
                 if current.row + 1 == self.n_rows {
-                    edges.entry((Direction::S, current.row)).or_default().insert(current.col);
+                    edges
+                        .entry((Direction::S, current.row))
+                        .or_default()
+                        .insert(current.col);
                 }
                 area += 1;
             }
-            let sides = edges.iter().fold(0,|sides: usize, (_, inner_hash)| {
+            let sides = edges.iter().fold(0, |sides: usize, (_, inner_hash)| {
                 let mut inner = Vec::from_iter(inner_hash.iter().map(|&x| x));
                 inner.sort();
-                sides + inner.iter().enumerate().fold(0, |sides: usize, (i, pos)| {
-                    sides + if i == 0 || *pos != inner[i - 1] + 1 {
-                        1
-                    } else {
-                        0
-                    }
-                })
+                sides
+                    + inner.iter().enumerate().fold(0, |sides: usize, (i, pos)| {
+                        sides
+                            + if i == 0 || *pos != inner[i - 1] + 1 {
+                                1
+                            } else {
+                                0
+                            }
+                    })
             });
             result += area * sides;
         }
         result
-
     }
 }
-
 
 pub fn task01(input: &str) -> String {
     let grid = Grid::parse_input(input);

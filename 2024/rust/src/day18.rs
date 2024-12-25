@@ -1,4 +1,7 @@
-use std::{collections::{HashSet, VecDeque}, hash::Hash};
+use std::{
+    collections::{HashSet, VecDeque},
+    hash::Hash,
+};
 
 // const N_ROWS: usize = 7;
 // const N_COLS: usize = 7;
@@ -17,13 +20,25 @@ impl Point {
     pub fn neighbors(&self) -> Vec<Point> {
         let mut neighbors = Vec::new();
         if self.row > 0 {
-            neighbors.push(Point { row: self.row - 1, col: self.col });
+            neighbors.push(Point {
+                row: self.row - 1,
+                col: self.col,
+            });
         }
-        neighbors.push(Point { row: self.row + 1, col: self.col });
+        neighbors.push(Point {
+            row: self.row + 1,
+            col: self.col,
+        });
         if self.col > 0 {
-            neighbors.push(Point { row: self.row, col: self.col - 1 });
+            neighbors.push(Point {
+                row: self.row,
+                col: self.col - 1,
+            });
         }
-        neighbors.push(Point { row: self.row, col: self.col + 1 });
+        neighbors.push(Point {
+            row: self.row,
+            col: self.col + 1,
+        });
         neighbors
     }
 
@@ -60,14 +75,17 @@ impl Grid {
     }
 
     pub fn neighbors(&self, point: Point) -> Vec<Point> {
-        point.neighbors().iter().filter_map(|p| {
-            if p.row < self.n_rows && p.col < self.n_cols {
-                Some(*p)
-            } else {
-                None
-            }
-        }).collect()
-
+        point
+            .neighbors()
+            .iter()
+            .filter_map(|p| {
+                if p.row < self.n_rows && p.col < self.n_cols {
+                    Some(*p)
+                } else {
+                    None
+                }
+            })
+            .collect()
     }
 
     pub fn bfs(&self, n_obstacles: usize) -> usize {
@@ -114,7 +132,7 @@ impl Grid {
         }
         // subtract one, because "mid" is the first byte that
         // isn't dropped.
-        self.falling_obstacles.get(low-1).unwrap().clone()
+        self.falling_obstacles.get(low - 1).unwrap().clone()
     }
 
     #[allow(dead_code)]

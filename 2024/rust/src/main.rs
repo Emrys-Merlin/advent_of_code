@@ -1,7 +1,7 @@
 use clap::Parser;
+use std::collections::HashMap;
 use std::env;
 use std::path::Path;
-use std::collections::HashMap;
 mod day01;
 mod day02;
 mod day03;
@@ -117,7 +117,9 @@ fn main() {
 
     let input = std::fs::read_to_string(input_file).expect("Failed to read input file");
 
-    let task = task_map.get(&(args.day, args.task)).expect("Task not found");
+    let task = task_map
+        .get(&(args.day, args.task))
+        .expect("Task not found");
     let result = task(&input);
     println!("Result: {}", result);
 }

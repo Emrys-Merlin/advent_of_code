@@ -10,9 +10,11 @@ enum Wire {
 impl Wire {
     pub fn from_str(wire: &str) -> Self {
         match wire {
-            "1" => { Wire::True },
-            "0" => { Wire::False },
-            _ => { unreachable!() },
+            "1" => Wire::True,
+            "0" => Wire::False,
+            _ => {
+                unreachable!()
+            }
         }
     }
 }
@@ -40,7 +42,7 @@ struct Gate {
     input1: String,
     input2: String,
     output: String,
-    operator: Operator
+    operator: Operator,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -58,7 +60,7 @@ impl Device {
         for line in input.lines() {
             if line.is_empty() {
                 first_part = false;
-                continue
+                continue;
             }
 
             if first_part {
@@ -67,23 +69,38 @@ impl Device {
             } else {
                 let mut input1 = "".to_string();
                 let mut input2 = "".to_string();
-                let mut output =  "".to_string();
+                let mut output = "".to_string();
                 let mut operator = "";
                 for (i, part) in line.split(" ").into_iter().enumerate() {
                     match i {
-                        0 => { input1 = part.to_string(); },
-                        1 => { operator = part; },
-                        2 => { input2 = part.to_string(); },
-                        3 => { },
-                        4 => { output = part.to_string(); },
-                        _ => { unreachable!() },
+                        0 => {
+                            input1 = part.to_string();
+                        }
+                        1 => {
+                            operator = part;
+                        }
+                        2 => {
+                            input2 = part.to_string();
+                        }
+                        3 => {}
+                        4 => {
+                            output = part.to_string();
+                        }
+                        _ => {
+                            unreachable!()
+                        }
                     }
                 }
 
                 if !wires.contains_key(&output) {
                     wires.insert(output.clone(), Wire::Inactive);
                 }
-                gates.push(Gate { input1, input2, output, operator: Operator::from_str(operator)});
+                gates.push(Gate {
+                    input1,
+                    input2,
+                    output,
+                    operator: Operator::from_str(operator),
+                });
             }
         }
 
@@ -99,15 +116,9 @@ impl Device {
         }
 
         let test = match gate.operator {
-            Operator::And => {
-                input1 == Wire::True && input2 == Wire::True
-            },
-            Operator::Or => {
-                input1 == Wire::True || input2 == Wire::True
-            },
-            Operator::Xor => {
-                (input1 == Wire::True) ^ (input2 == Wire::True)
-            }
+            Operator::And => input1 == Wire::True && input2 == Wire::True,
+            Operator::Or => input1 == Wire::True || input2 == Wire::True,
+            Operator::Xor => (input1 == Wire::True) ^ (input2 == Wire::True),
         };
 
         match test {
@@ -117,7 +128,6 @@ impl Device {
     }
 
     fn read_output(&self) -> Option<usize> {
-
         let mut res = 0;
 
         for (name, wire) in self.wires.iter() {
@@ -137,7 +147,6 @@ impl Device {
     }
 
     pub fn run(&mut self) -> usize {
-
         while !self.gates.is_empty() {
             let mut new_gates = Vec::new();
             for gate in self.gates.iter() {

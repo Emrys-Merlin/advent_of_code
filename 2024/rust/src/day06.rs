@@ -10,24 +10,20 @@ struct Grid {
 impl Grid {
     pub fn step(&self, point: Point) -> Option<Point> {
         let (row, col) = match point.direction {
-            Direction::N => {
-                (point.row.checked_sub(1)?, point.col)
-            },
+            Direction::N => (point.row.checked_sub(1)?, point.col),
             Direction::E => {
                 if point.col + 1 >= self.n_cols {
                     return None;
                 }
                 (point.row, point.col + 1)
-            },
+            }
             Direction::S => {
                 if point.row + 1 >= self.n_rows {
                     return None;
                 }
                 (point.row + 1, point.col)
             }
-            Direction::W => {
-                (point.row, point.col.checked_sub(1)?)
-            }
+            Direction::W => (point.row, point.col.checked_sub(1)?),
         };
 
         if self.obstacles.contains(&(row, col)) {
@@ -37,11 +33,18 @@ impl Grid {
                 Direction::S => Direction::W,
                 Direction::W => Direction::N,
             };
-            return Some(Point { row: point.row, col: point.col, direction });
+            return Some(Point {
+                row: point.row,
+                col: point.col,
+                direction,
+            });
         }
 
-        return Some(Point { row, col, direction: point.direction });
-
+        return Some(Point {
+            row,
+            col,
+            direction: point.direction,
+        });
     }
 
     pub fn check_loop(&self, point: Point) -> (bool, HashSet<Point>) {
@@ -89,21 +92,43 @@ fn parse_input(input: &str) -> (Grid, Option<Point>) {
         n_cols = line.len();
         for (j, c) in line.trim().chars().enumerate() {
             start = match c {
-                '#' => {obstacles.insert((i, j)); start},
-                '^' => Some(Point { row: i, col: j, direction: Direction::N }),
-                'v' => Some(Point { row: i, col: j, direction: Direction::S }),
-                '<' => Some(Point { row: i, col: j, direction: Direction::W }),
-                '>' => Some(Point { row: i, col: j, direction: Direction::E }),
+                '#' => {
+                    obstacles.insert((i, j));
+                    start
+                }
+                '^' => Some(Point {
+                    row: i,
+                    col: j,
+                    direction: Direction::N,
+                }),
+                'v' => Some(Point {
+                    row: i,
+                    col: j,
+                    direction: Direction::S,
+                }),
+                '<' => Some(Point {
+                    row: i,
+                    col: j,
+                    direction: Direction::W,
+                }),
+                '>' => Some(Point {
+                    row: i,
+                    col: j,
+                    direction: Direction::E,
+                }),
                 _ => start,
             }
         }
     }
 
-    (Grid {
-        n_rows,
-        n_cols,
-        obstacles,
-    }, start)
+    (
+        Grid {
+            n_rows,
+            n_cols,
+            obstacles,
+        },
+        start,
+    )
 }
 
 pub fn task01(input: &str) -> String {
@@ -130,7 +155,12 @@ pub fn task02(input: &str) -> String {
     let (mut grid, prob_start) = parse_input(input);
     let start = prob_start.expect("No start point found");
 
-    let mut initial_path: HashSet<(usize, usize)> = HashSet::from_iter(grid.check_loop(start.clone()).1.iter().map(|point| (point.row, point.col)));
+    let mut initial_path: HashSet<(usize, usize)> = HashSet::from_iter(
+        grid.check_loop(start.clone())
+            .1
+            .iter()
+            .map(|point| (point.row, point.col)),
+    );
     initial_path.remove(&(start.row, start.col));
 
     let mut result = 0;

@@ -1,12 +1,12 @@
-use std::collections::HashMap;
 use regex::Regex;
+use std::collections::HashMap;
 
 // const N_ROWS: usize = 7;
 // const N_COLS: usize = 11;
 const N_ROWS: usize = 103;
 const N_COLS: usize = 101;
 
-#[derive(Debug,Clone,PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 enum Quadrant {
     UpperLeft,
     LowerLeft,
@@ -51,7 +51,7 @@ impl Point {
         }
 
         if self.col < mid_cols {
-            return Some(Quadrant::LowerLeft)
+            return Some(Quadrant::LowerLeft);
         }
 
         Some(Quadrant::LowerRight)
@@ -76,7 +76,8 @@ impl Robot {
 }
 
 fn parse_input(input: &str) -> Vec<Robot> {
-    let re = Regex::new(r"p=(?<poscol>\d+),(?<posrow>\d+) v=(?<velcol>-?\d+),(?<velrow>-?\d+)").unwrap();
+    let re =
+        Regex::new(r"p=(?<poscol>\d+),(?<posrow>\d+) v=(?<velcol>-?\d+),(?<velrow>-?\d+)").unwrap();
     let mut robots = Vec::new();
     for line in input.lines() {
         if line.is_empty() {
@@ -85,17 +86,34 @@ fn parse_input(input: &str) -> Vec<Robot> {
 
         let capture = re.captures(line).unwrap();
         let start = Point {
-            row: capture.name("posrow").unwrap().as_str().parse::<isize>().unwrap(),
-            col: capture.name("poscol").unwrap().as_str().parse::<isize>().unwrap(),
+            row: capture
+                .name("posrow")
+                .unwrap()
+                .as_str()
+                .parse::<isize>()
+                .unwrap(),
+            col: capture
+                .name("poscol")
+                .unwrap()
+                .as_str()
+                .parse::<isize>()
+                .unwrap(),
         };
         let velocity = Point {
-            row: capture.name("velrow").unwrap().as_str().parse::<isize>().unwrap(),
-            col: capture.name("velcol").unwrap().as_str().parse::<isize>().unwrap(),
+            row: capture
+                .name("velrow")
+                .unwrap()
+                .as_str()
+                .parse::<isize>()
+                .unwrap(),
+            col: capture
+                .name("velcol")
+                .unwrap()
+                .as_str()
+                .parse::<isize>()
+                .unwrap(),
         };
-        let robot = Robot {
-            start,
-            velocity,
-        };
+        let robot = Robot { start, velocity };
         robots.push(robot);
     }
     robots
@@ -117,7 +135,7 @@ fn score(robots: &Vec<Robot>, n_rows: usize, n_cols: usize, n_steps: usize) -> u
         return 0;
     }
 
-    counts.values().fold(1_usize, |prod, &count| prod*count)
+    counts.values().fold(1_usize, |prod, &count| prod * count)
 }
 
 fn render(robots: &Vec<Robot>, n_rows: usize, n_cols: usize, n_steps: usize) -> Vec<Vec<char>> {
@@ -144,11 +162,12 @@ pub fn task01(input: &str) -> String {
 
 pub fn task02(input: &str) -> String {
     let robots = parse_input(input);
-    let max_period = N_ROWS*N_COLS;
+    let max_period = N_ROWS * N_COLS;
     let max_render = 10;
 
-
-    let mut scores = (1..max_period).map(|n_steps| (n_steps, score(&robots, N_ROWS, N_COLS, n_steps))).collect::<Vec<(usize, usize)>>();
+    let mut scores = (1..max_period)
+        .map(|n_steps| (n_steps, score(&robots, N_ROWS, N_COLS, n_steps)))
+        .collect::<Vec<(usize, usize)>>();
     scores.sort_by(|a, b| a.1.cmp(&b.1));
 
     for i in 0..max_render {

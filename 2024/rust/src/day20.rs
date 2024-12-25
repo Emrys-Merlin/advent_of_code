@@ -10,12 +10,24 @@ impl Point {
     pub fn neighbors(&self) -> Vec<Self> {
         let mut neighbors = Vec::new();
         if self.row > 0 {
-            neighbors.push(Point { row: self.row - 1, col: self.col });
+            neighbors.push(Point {
+                row: self.row - 1,
+                col: self.col,
+            });
         }
-        neighbors.push(Point { row: self.row, col: self.col + 1 });
-        neighbors.push(Point { row: self.row + 1, col: self.col });
+        neighbors.push(Point {
+            row: self.row,
+            col: self.col + 1,
+        });
+        neighbors.push(Point {
+            row: self.row + 1,
+            col: self.col,
+        });
         if self.col > 0 {
-            neighbors.push(Point { row: self.row, col: self.col - 1 });
+            neighbors.push(Point {
+                row: self.row,
+                col: self.col - 1,
+            });
         }
         neighbors
     }
@@ -42,10 +54,16 @@ impl Grid {
             for (col, ch) in line.chars().enumerate() {
                 let point = Point { row, col };
                 match ch {
-                    '#' => { walls.insert(point); },
-                    'S' => { start = point; },
-                    'E' => { end = point; },
-                    '.' => {},
+                    '#' => {
+                        walls.insert(point);
+                    }
+                    'S' => {
+                        start = point;
+                    }
+                    'E' => {
+                        end = point;
+                    }
+                    '.' => {}
                     _ => unreachable!(),
                 }
             }
@@ -54,12 +72,14 @@ impl Grid {
     }
 
     fn neighbors(&self, point: Point) -> Vec<Point> {
-        point.neighbors().iter().filter_map(|&point| {
-            match self.walls.contains(&point) {
+        point
+            .neighbors()
+            .iter()
+            .filter_map(|&point| match self.walls.contains(&point) {
                 true => None,
                 false => Some(point),
-            }
-        }).collect()
+            })
+            .collect()
     }
 
     pub fn follow_unique_path(&self) -> Option<Vec<Point>> {
@@ -73,7 +93,11 @@ impl Grid {
         path.push(current);
 
         while current != self.end {
-            let neighbors = self.neighbors(current).iter().filter_map(|&p| if p != previous { Some(p) } else {None}).collect::<Vec<_>>();
+            let neighbors = self
+                .neighbors(current)
+                .iter()
+                .filter_map(|&p| if p != previous { Some(p) } else { None })
+                .collect::<Vec<_>>();
             if neighbors.len() != 1 {
                 return None;
             }
@@ -108,8 +132,10 @@ impl Grid {
 fn task(input: &str, cheat_length: usize) -> String {
     let grid = Grid::parse_input(input);
     let cheats = grid.count_cheats(cheat_length);
-    cheats.iter().fold(0, |acc, (&k, &v)| acc + if k >= 100 { v } else { 0 }).to_string()
-
+    cheats
+        .iter()
+        .fold(0, |acc, (&k, &v)| acc + if k >= 100 { v } else { 0 })
+        .to_string()
 }
 
 pub fn task01(input: &str) -> String {

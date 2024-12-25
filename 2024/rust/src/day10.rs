@@ -10,13 +10,25 @@ impl Point {
     pub fn neighbors(&self) -> Vec<Point> {
         let mut neighbors: Vec<Point> = Vec::new();
         if self.row != 0 {
-            neighbors.push(Point { row: self.row - 1, col: self.col });
+            neighbors.push(Point {
+                row: self.row - 1,
+                col: self.col,
+            });
         }
         if self.col != 0 {
-            neighbors.push(Point { row: self.row, col: self.col - 1 });
+            neighbors.push(Point {
+                row: self.row,
+                col: self.col - 1,
+            });
         }
-        neighbors.push(Point { row: self.row + 1, col: self.col });
-        neighbors.push(Point { row: self.row, col: self.col + 1 });
+        neighbors.push(Point {
+            row: self.row + 1,
+            col: self.col,
+        });
+        neighbors.push(Point {
+            row: self.row,
+            col: self.col + 1,
+        });
         neighbors
     }
 }
@@ -71,13 +83,17 @@ impl Grid {
 
     pub fn neighbors(&self, point: &Point) -> Vec<Point> {
         let value = self.get(point).unwrap();
-        point.neighbors().iter().filter_map(|p| {
-            if self.get(p).unwrap_or(value) ==  value + 1 {
-                Some(p.clone())
-            } else {
-                None
-            }
-        }).collect()
+        point
+            .neighbors()
+            .iter()
+            .filter_map(|p| {
+                if self.get(p).unwrap_or(value) == value + 1 {
+                    Some(p.clone())
+                } else {
+                    None
+                }
+            })
+            .collect()
     }
 
     pub fn count_path(&self, start: &Point, use_score: bool) -> usize {
@@ -88,14 +104,14 @@ impl Grid {
         while stack.len() != 0 {
             let current = stack.pop().unwrap();
             if use_score && visited.contains(&current) {
-                continue
+                continue;
             }
 
             visited.insert(current.clone());
 
             if self.get(&current).unwrap() == 9 {
                 count += 1;
-                continue
+                continue;
             }
             stack.extend(self.neighbors(&current));
         }
@@ -111,7 +127,6 @@ impl Grid {
         count
     }
 }
-
 
 pub fn task01(input: &str) -> String {
     let grid = Grid::read_input(input);

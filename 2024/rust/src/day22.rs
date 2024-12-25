@@ -16,7 +16,7 @@ fn update_secret(secret: &mut usize, lookup: &mut HashMap<usize, usize>) {
         *secret = lookup.get(secret).unwrap().clone();
     } else {
         let old_secret = *secret;
-        let mut result = *secret  << 6;
+        let mut result = *secret << 6;
         mix_prune(secret, &result);
         result = *secret >> 5;
         mix_prune(secret, &result);
@@ -30,12 +30,16 @@ pub fn task01(input: &str) -> String {
     let mut secrets = parse_input(input);
     let mut lookup = HashMap::with_capacity(MODULUS);
 
-    secrets.iter_mut().map(|secret| {
-        for _ in 0..N_ITERATIONS {
-            update_secret(secret, &mut lookup);
-        }
-        *secret
-    }).sum::<usize>().to_string()
+    secrets
+        .iter_mut()
+        .map(|secret| {
+            for _ in 0..N_ITERATIONS {
+                update_secret(secret, &mut lookup);
+            }
+            *secret
+        })
+        .sum::<usize>()
+        .to_string()
 }
 
 pub fn task02(input: &str) -> String {
@@ -59,10 +63,19 @@ pub fn task02(input: &str) -> String {
 
             if price_deltas.len() >= 4 {
                 // String conversion turned out easier (for me) than extracting a fixed sized array or tuple...
-                let pattern = price_deltas.iter().rev().take(4).map(|delta| delta.to_string()).collect::<Vec<_>>().join(",");
+                let pattern = price_deltas
+                    .iter()
+                    .rev()
+                    .take(4)
+                    .map(|delta| delta.to_string())
+                    .collect::<Vec<_>>()
+                    .join(",");
                 // Make sure we only use each pattern once
                 if !used_patterns.contains(&pattern) {
-                    bananas.insert(pattern.clone(), price + *bananas.get(&pattern).unwrap_or(&0));
+                    bananas.insert(
+                        pattern.clone(),
+                        price + *bananas.get(&pattern).unwrap_or(&0),
+                    );
                     used_patterns.insert(pattern.clone());
                 }
             }

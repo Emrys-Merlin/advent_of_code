@@ -9,10 +9,22 @@ struct Point {
 impl Point {
     pub fn move_dir(&self, dir: char) -> Option<Point> {
         match dir {
-            '^' => Some(Point { row: self.row.checked_sub(1)?, col: self.col }),
-            'v' => Some(Point { row: self.row + 1, col: self.col }),
-            '>' => Some(Point { row: self.row, col: self.col + 1 }),
-            '<' => Some(Point { row: self.row, col: self.col.checked_sub(1)? }),
+            '^' => Some(Point {
+                row: self.row.checked_sub(1)?,
+                col: self.col,
+            }),
+            'v' => Some(Point {
+                row: self.row + 1,
+                col: self.col,
+            }),
+            '>' => Some(Point {
+                row: self.row,
+                col: self.col + 1,
+            }),
+            '<' => Some(Point {
+                row: self.row,
+                col: self.col.checked_sub(1)?,
+            }),
             _ => None,
         }
     }
@@ -38,7 +50,6 @@ impl Grid {
         let mut switch = false;
 
         for (row, line) in input.lines().enumerate() {
-
             if line.is_empty() {
                 switch = true;
                 continue;
@@ -46,7 +57,10 @@ impl Grid {
 
             if !switch {
                 for (col, ch) in line.trim().chars().enumerate() {
-                    let point = Point { row, col: col * col_factor };
+                    let point = Point {
+                        row,
+                        col: col * col_factor,
+                    };
                     match ch {
                         '#' => {
                             let mut point = point;
@@ -54,11 +68,17 @@ impl Grid {
                                 walls.insert(point);
                                 point = point.move_dir('>').unwrap();
                             }
-                        },
-                        '@' => { robot = point; },
-                        'O' => { crates.insert(point); },
-                        '.' => { },
-                        _ =>  { unreachable!(); }
+                        }
+                        '@' => {
+                            robot = point;
+                        }
+                        'O' => {
+                            crates.insert(point);
+                        }
+                        '.' => {}
+                        _ => {
+                            unreachable!();
+                        }
                     }
                 }
             } else {
@@ -66,7 +86,12 @@ impl Grid {
             }
         }
 
-        Self { walls, crates, robot, instructions }
+        Self {
+            walls,
+            crates,
+            robot,
+            instructions,
+        }
     }
 
     pub fn gps(&self) -> usize {
@@ -102,7 +127,13 @@ impl Grid {
     }
 
     // TODO Refactor: Part as return type; part as reference
-    fn move_wide_crate(&self, crate_point: &Point, direction: char, remove: &mut HashSet<Point>, insert: &mut HashSet<Point>) -> bool {
+    fn move_wide_crate(
+        &self,
+        crate_point: &Point,
+        direction: char,
+        remove: &mut HashSet<Point>,
+        insert: &mut HashSet<Point>,
+    ) -> bool {
         if !self.crates.contains(crate_point) {
             return true;
         }
@@ -115,18 +146,25 @@ impl Grid {
         }
 
         let move_possible = match direction {
-            '^' | 'v' => {
-                [new_crate, new_crate_right, new_crate_left].iter().fold(true, |move_possible, new_crate| {
-                    move_possible && (!self.crates.contains(new_crate) || self.move_wide_crate(new_crate, direction, remove, insert))
-                })
-            },
+            '^' | 'v' => [new_crate, new_crate_right, new_crate_left].iter().fold(
+                true,
+                |move_possible, new_crate| {
+                    move_possible
+                        && (!self.crates.contains(new_crate)
+                            || self.move_wide_crate(new_crate, direction, remove, insert))
+                },
+            ),
             '>' => {
-                !self.crates.contains(&new_crate_right) || self.move_wide_crate(&new_crate_right, direction, remove, insert)
-            },
+                !self.crates.contains(&new_crate_right)
+                    || self.move_wide_crate(&new_crate_right, direction, remove, insert)
+            }
             '<' => {
-                !self.crates.contains(&new_crate_left) || self.move_wide_crate(&new_crate_left, direction, remove, insert)
-            },
-            _ => { unreachable!(); },
+                !self.crates.contains(&new_crate_left)
+                    || self.move_wide_crate(&new_crate_left, direction, remove, insert)
+            }
+            _ => {
+                unreachable!();
+            }
         };
 
         if move_possible {
@@ -142,7 +180,6 @@ impl Grid {
 
             if self.walls.contains(&new_robot) {
                 continue;
-
             }
             let left = new_robot.move_dir('<').unwrap();
             let mut remove = HashSet::new();
@@ -150,17 +187,27 @@ impl Grid {
 
             let move_possible = match instruction {
                 '^' | 'v' => {
-                    (!self.crates.contains(&left) || self.move_wide_crate(&left, instruction, &mut remove, &mut insert)) &&
-                    (!self.crates.contains(&new_robot) || self.move_wide_crate(&new_robot, instruction, &mut remove, &mut insert))
-                },
+                    (!self.crates.contains(&left)
+                        || self.move_wide_crate(&left, instruction, &mut remove, &mut insert))
+                        && (!self.crates.contains(&new_robot)
+                            || self.move_wide_crate(
+                                &new_robot,
+                                instruction,
+                                &mut remove,
+                                &mut insert,
+                            ))
+                }
                 '>' => {
-                    !self.crates.contains(&new_robot) || self.move_wide_crate(&new_robot, instruction, &mut remove, &mut insert)
-                },
+                    !self.crates.contains(&new_robot)
+                        || self.move_wide_crate(&new_robot, instruction, &mut remove, &mut insert)
+                }
                 '<' => {
-                    !self.crates.contains(&left) || self.move_wide_crate(&left, instruction, &mut remove, &mut insert)
-                },
-                _ => { unreachable!(); },
-
+                    !self.crates.contains(&left)
+                        || self.move_wide_crate(&left, instruction, &mut remove, &mut insert)
+                }
+                _ => {
+                    unreachable!();
+                }
             };
 
             if move_possible {

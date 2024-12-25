@@ -2,12 +2,13 @@ use regex::Regex;
 
 fn task(input: &str) -> i32 {
     let re = Regex::new(r"mul\((?<left>\d+),(?<right>\d+)\)").unwrap();
-    re.captures_iter(input).map(|m| {
-        let left = m.name("left").unwrap().as_str().parse::<i32>().unwrap();
-        let right = m.name("right").unwrap().as_str().parse::<i32>().unwrap();
-        left * right
-    }).sum()
-
+    re.captures_iter(input)
+        .map(|m| {
+            let left = m.name("left").unwrap().as_str().parse::<i32>().unwrap();
+            let right = m.name("right").unwrap().as_str().parse::<i32>().unwrap();
+            left * right
+        })
+        .sum()
 }
 
 pub fn task01(input: &str) -> String {
@@ -16,11 +17,11 @@ pub fn task01(input: &str) -> String {
 }
 
 pub fn task02(mut input: &str) -> String {
-    input = input.trim();   
+    input = input.trim();
     let mut active = true;
 
     let mut result = 0;
-    let mut content: &str; 
+    let mut content: &str;
     while input.len() != 0 {
         if active {
             (content, input) = input.split_once("don't()").unwrap_or((input, ""));
@@ -30,7 +31,6 @@ pub fn task02(mut input: &str) -> String {
             (_, input) = input.split_once("do()").unwrap_or((input, ""));
             active = true
         }
-
     }
     result.to_string()
 }
