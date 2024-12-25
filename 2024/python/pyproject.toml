@@ -1,0 +1,22 @@
+[project]
+name = "aoc2024"
+version = "0.1.0"
+description = "Python solution for the Advent of Code 2024"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "graphviz",
+    "typer",
+]
+
+[project.scripts]
+aoc2024 = "aoc2024.main:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = [
+    "ipdb>=0.13.13",
+]
