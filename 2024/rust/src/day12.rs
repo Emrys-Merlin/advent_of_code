@@ -214,3 +214,33 @@ pub fn task02(input: &str) -> String {
     let grid = Grid::parse_input(input);
     grid.area_side().to_string()
 }
+
+#[cfg(test)]
+mod tests {
+    use super::super::fs_utils::{read_example, read_input};
+    use super::*;
+
+    #[test]
+    fn test_task01() {
+        let input = read_example(12, 3);
+        assert_eq!(task01(&input), "1930");
+    }
+
+    #[test]
+    fn run_task01() {
+        let input = read_input(12);
+        assert_eq!(task01(&input), "1451030");
+    }
+
+    #[test]
+    fn test_task02() {
+        let input = read_example(12, 3);
+        assert_eq!(task02(&input), "1206");
+    }
+
+    #[test]
+    fn run_task02() {
+        let input = read_input(12);
+        assert_eq!(task02(&input), "859494");
+    }
+}

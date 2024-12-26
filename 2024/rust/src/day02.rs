@@ -86,3 +86,33 @@ pub fn task02(input: &str) -> String {
     }
     safe_lines.to_string()
 }
+
+#[cfg(test)]
+mod tests {
+    use super::super::fs_utils::{read_example, read_input};
+    use super::*;
+
+    #[test]
+    fn test_task01() {
+        let input = read_example(2, 1);
+        assert_eq!(task01(&input), "2");
+    }
+
+    #[test]
+    fn test_task02() {
+        let input = read_example(2, 1);
+        assert_eq!(task02(&input), "4");
+    }
+
+    #[test]
+    fn run_task01() {
+        let input = read_input(2);
+        assert_eq!(task01(&input), "663");
+    }
+
+    #[test]
+    fn run_task02() {
+        let input = read_input(2);
+        assert_eq!(task02(&input), "692");
+    }
+}

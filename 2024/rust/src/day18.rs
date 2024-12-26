@@ -55,9 +55,7 @@ struct Grid {
 }
 
 impl Grid {
-    pub fn from_input(input: &str) -> Self {
-        let n_rows = N_ROWS;
-        let n_cols = N_COLS;
+    pub fn from_input(input: &str, n_rows: usize, n_cols: usize) -> Self {
         let mut falling_obstacles = Vec::new();
 
         for lin in input.lines() {
@@ -158,11 +156,45 @@ impl Grid {
 }
 
 pub fn task01(input: &str) -> String {
-    let grid = Grid::from_input(input);
+    let grid = Grid::from_input(input, N_ROWS, N_COLS);
     grid.bfs(N_OBSTACLES).to_string()
 }
 
 pub fn task02(input: &str) -> String {
-    let grid = Grid::from_input(input);
+    let grid = Grid::from_input(input, N_ROWS, N_COLS);
     grid.binary_search().short_string()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::super::fs_utils::{read_example, read_input};
+    use super::*;
+
+    #[test]
+    fn test_task01() {
+        let input = read_example(18, 1);
+        let grid = Grid::from_input(&input, 7, 7);
+        let res = grid.bfs(12).to_string();
+        assert_eq!(res, "22");
+    }
+
+    #[test]
+    fn run_task01() {
+        let input = read_input(18);
+        assert_eq!(task01(&input), "340");
+    }
+
+    #[test]
+    fn test_task02() {
+        let input = read_example(18, 1);
+        let grid = Grid::from_input(&input, 7, 7);
+        let res = grid.binary_search().short_string();
+        assert_eq!(res, "(6,1)");
+    }
+
+    #[test]
+    fn run_task02() {
+        let input = read_input(18);
+        assert_eq!(task02(&input), "(34,32)");
+    }
 }

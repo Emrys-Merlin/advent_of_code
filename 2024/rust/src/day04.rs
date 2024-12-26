@@ -205,19 +205,32 @@ pub fn task02(input: &str) -> String {
     Some(sum).unwrap().to_string()
 }
 
-// #[cfg(test)]
-// mod tests {
-//     use super::*;
+#[cfg(test)]
+mod tests {
+    use super::super::fs_utils::{read_example, read_input};
+    use super::*;
 
-//     #[test]
-//     fn test_part_one() {
-//         let result = part_one(&advent_of_code::template::read_file("examples", DAY));
-//         assert_eq!(result, Some(18));
-//     }
+    #[test]
+    fn test_task01() {
+        let input = read_example(4, 1);
+        assert_eq!(task01(&input), "18");
+    }
 
-//     #[test]
-//     fn test_part_two() {
-//         let result = part_two(&advent_of_code::template::read_file("examples", DAY));
-//         assert_eq!(result, Some(9));
-//     }
-// }
+    #[test]
+    fn test_task02() {
+        let input = read_example(4, 1);
+        assert_eq!(task02(&input), "9");
+    }
+
+    #[test]
+    fn run_task01() {
+        let input = read_input(4);
+        assert_eq!(task01(&input), "2547");
+    }
+
+    #[test]
+    fn run_task02() {
+        let input = read_input(4);
+        assert_eq!(task02(&input), "1939");
+    }
+}

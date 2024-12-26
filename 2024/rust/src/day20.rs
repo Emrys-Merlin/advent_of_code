@@ -129,19 +129,49 @@ impl Grid {
     }
 }
 
-fn task(input: &str, cheat_length: usize) -> String {
+fn task(input: &str, cheat_length: usize, min_save: usize) -> String {
     let grid = Grid::parse_input(input);
     let cheats = grid.count_cheats(cheat_length);
     cheats
         .iter()
-        .fold(0, |acc, (&k, &v)| acc + if k >= 100 { v } else { 0 })
+        .fold(0, |acc, (&k, &v)| acc + if k >= min_save { v } else { 0 })
         .to_string()
 }
 
 pub fn task01(input: &str) -> String {
-    task(input, 2)
+    task(input, 2, 100)
 }
 
 pub fn task02(input: &str) -> String {
-    task(input, 20)
+    task(input, 20, 100)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::super::fs_utils::{read_example, read_input};
+    use super::*;
+
+    #[test]
+    fn test_task01() {
+        let input = read_example(20, 1);
+        assert_eq!(task(&input, 2, 0), "211");
+    }
+
+    #[test]
+    fn run_task01() {
+        let input = read_input(20);
+        assert_eq!(task01(&input), "1448");
+    }
+
+    #[test]
+    fn test_task02() {
+        let input = read_example(20, 1);
+        assert_eq!(task(&input, 20, 50), "285");
+    }
+
+    #[test]
+    fn run_task02() {
+        let input = read_input(20);
+        assert_eq!(task02(&input), "1017615");
+    }
 }

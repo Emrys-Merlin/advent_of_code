@@ -76,3 +76,33 @@ pub fn task01(input: &str) -> String {
 pub fn task02(input: &str) -> String {
     hashmap_based(input, 75)
 }
+
+#[cfg(test)]
+mod tests {
+    use super::super::fs_utils::{read_example, read_input};
+    use super::*;
+
+    #[test]
+    fn test_task01() {
+        let input = read_example(11, 1);
+        assert_eq!(task01(&input), "55312");
+    }
+
+    #[test]
+    fn run_task01() {
+        let input = read_input(11);
+        assert_eq!(task01(&input), "220722");
+    }
+
+    #[test]
+    fn test_task02() {
+        let input = read_example(11, 1);
+        assert_eq!(task02(&input), "65601038650482");
+    }
+
+    #[test]
+    fn run_task02() {
+        let input = read_input(11);
+        assert_eq!(task02(&input), "261952051690787");
+    }
+}

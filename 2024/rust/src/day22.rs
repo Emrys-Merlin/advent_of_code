@@ -85,3 +85,33 @@ pub fn task02(input: &str) -> String {
 
     bananas.values().max().unwrap().to_string()
 }
+
+#[cfg(test)]
+mod tests {
+    use super::super::fs_utils::{read_example, read_input};
+    use super::*;
+
+    #[test]
+    fn test_task01() {
+        let input = read_example(22, 1);
+        assert_eq!(task01(&input), "37327623");
+    }
+
+    #[test]
+    fn run_task01() {
+        let input = read_input(22);
+        assert_eq!(task01(&input), "12664695565");
+    }
+
+    #[test]
+    fn test_task02() {
+        let input = read_example(22, 2);
+        assert_eq!(task02(&input), "23");
+    }
+
+    #[test]
+    fn run_task02() {
+        let input = read_input(22);
+        assert_eq!(task02(&input), "1444");
+    }
+}

@@ -68,3 +68,33 @@ pub fn task02(input: &str) -> String {
         .sum::<usize>()
         .to_string()
 }
+
+#[cfg(test)]
+mod tests {
+    use super::super::fs_utils::{read_example, read_input};
+    use super::*;
+
+    #[test]
+    fn test_task01() {
+        let input = read_example(19, 1);
+        assert_eq!(task01(&input), "6");
+    }
+
+    #[test]
+    fn run_task01() {
+        let input = read_input(19);
+        assert_eq!(task01(&input), "238");
+    }
+
+    #[test]
+    fn test_task02() {
+        let input = read_example(19, 1);
+        assert_eq!(task02(&input), "16");
+    }
+
+    #[test]
+    fn run_task02() {
+        let input = read_input(19);
+        assert_eq!(task02(&input), "635018909726691");
+    }
+}

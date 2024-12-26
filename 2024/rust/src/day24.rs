@@ -174,3 +174,43 @@ pub fn task01(input: &str) -> String {
 pub fn task02(_input: &str) -> String {
     "Not implemented. Look at python graphviz approach".to_string()
 }
+
+#[cfg(test)]
+mod tests {
+    use super::super::fs_utils::{read_example, read_input};
+    use super::*;
+
+    #[test]
+    fn test_task01() {
+        let input = read_example(24, 2);
+        assert_eq!(task01(&input), "2024");
+    }
+
+    #[test]
+    fn run_task01() {
+        let input = read_input(24);
+        assert_eq!(task01(&input), "59619940979346");
+    }
+
+    #[test]
+    fn test_task02() {
+        let input = read_example(24, 1);
+        assert_eq!(
+            task02(&input),
+            "Not implemented. Look at python graphviz approach"
+        );
+    }
+
+    #[test]
+    fn run_task02() {
+        let input = read_input(24);
+        assert_eq!(
+            task02(&input),
+            "Not implemented. Look at python graphviz approach"
+        );
+        assert_eq!(
+            "bpt,fkp,krj,mfm,ngr,z06,z11,z31",
+            "bpt,fkp,krj,mfm,ngr,z06,z11,z31"
+        );
+    }
+}

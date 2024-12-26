@@ -74,3 +74,33 @@ pub fn task01(input: &str) -> String {
 pub fn task02(input: &str) -> String {
     return task(input, false);
 }
+
+#[cfg(test)]
+mod tests {
+    use super::super::fs_utils::{read_example, read_input};
+    use super::*;
+
+    #[test]
+    fn test_task01() {
+        let input = read_example(5, 1);
+        assert_eq!(task01(&input), "143");
+    }
+
+    #[test]
+    fn run_task01() {
+        let input = read_input(5);
+        assert_eq!(task01(&input), "5955");
+    }
+
+    #[test]
+    fn test_task02() {
+        let input = read_example(5, 1);
+        assert_eq!(task02(&input), "123");
+    }
+
+    #[test]
+    fn run_task02() {
+        let input = read_input(5);
+        assert_eq!(task02(&input), "4030");
+    }
+}

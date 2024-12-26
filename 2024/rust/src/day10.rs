@@ -137,3 +137,33 @@ pub fn task02(input: &str) -> String {
     let grid = Grid::read_input(input);
     grid.count_paths(false).to_string()
 }
+
+#[cfg(test)]
+mod tests {
+    use super::super::fs_utils::{read_example, read_input};
+    use super::*;
+
+    #[test]
+    fn test_task01() {
+        let input = read_example(10, 2);
+        assert_eq!(task01(&input), "36");
+    }
+
+    #[test]
+    fn run_task01() {
+        let input = read_input(10);
+        assert_eq!(task01(&input), "593");
+    }
+
+    #[test]
+    fn test_task02() {
+        let input = read_example(10, 2);
+        assert_eq!(task02(&input), "81");
+    }
+
+    #[test]
+    fn run_task02() {
+        let input = read_input(10);
+        assert_eq!(task02(&input), "1192");
+    }
+}

@@ -27,18 +27,13 @@ fn sort_by_degree(graph: &HashMap<String, HashSet<String>>) -> Vec<String> {
 
 fn count_triangles_with_t(graph: &mut HashMap<String, HashSet<String>>) -> usize {
     let nodes = sort_by_degree(graph);
-    for node in nodes.iter() {
-        println!("{}: {:?}", node, graph.get(node).unwrap().len());
-    }
     let mut count = 0;
 
     for node in nodes.iter() {
-        // let neighbors = graph.entry(node.clone()).or_insert(HashSet::new());
         let neighbors = graph.get(node).unwrap();
         for (i, neighbor) in neighbors.iter().enumerate() {
             for other_neighbor in neighbors.iter().skip(i + 1) {
                 if graph.get(neighbor).unwrap().contains(other_neighbor) {
-                    // println!("{}-{}-{}", node, neighbor, other_neighbor);
                     if node.starts_with("t")
                         || neighbor.starts_with("t")
                         || other_neighbor.starts_with("t")
@@ -125,4 +120,34 @@ pub fn task02(input: &str) -> String {
     let mut sorted_clique = clique.iter().cloned().collect::<Vec<String>>();
     sorted_clique.sort();
     sorted_clique.join(",")
+}
+
+#[cfg(test)]
+mod tests {
+    use super::super::fs_utils::{read_example, read_input};
+    use super::*;
+
+    #[test]
+    fn test_task01() {
+        let input = read_example(23, 1);
+        assert_eq!(task01(&input), "7");
+    }
+
+    #[test]
+    fn run_task01() {
+        let input = read_input(23);
+        assert_eq!(task01(&input), "1173");
+    }
+
+    #[test]
+    fn test_task02() {
+        let input = read_example(23, 1);
+        assert_eq!(task02(&input), "co,de,ka,ta");
+    }
+
+    #[test]
+    fn run_task02() {
+        let input = read_input(23);
+        assert_eq!(task02(&input), "cm,de,ez,gv,hg,iy,or,pw,qu,rs,sn,uc,wq");
+    }
 }

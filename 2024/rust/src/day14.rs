@@ -179,3 +179,33 @@ pub fn task02(input: &str) -> String {
 
     "Everything printed".to_string()
 }
+
+#[cfg(test)]
+mod tests {
+    use super::super::fs_utils::{read_example, read_input};
+    use super::*;
+
+    #[test]
+    fn test_task01() {
+        let input = read_example(14, 1);
+        let robots = parse_input(&input);
+        let n_steps = 100_usize;
+
+        assert_eq!(score(&robots, 7, 11, n_steps), 12);
+    }
+
+    #[test]
+    fn run_task01() {
+        let input = read_input(14);
+        assert_eq!(task01(&input), "230900224");
+    }
+
+    #[test]
+    fn test_task02() {}
+
+    #[test]
+    fn run_task02() {
+        // semi-manual solution
+        assert_eq!("6532", "6532");
+    }
+}

@@ -98,3 +98,33 @@ pub fn task02(input: &str) -> String {
     let operators = Vec::from([Operator::Add, Operator::Multiply, Operator::Cat]);
     task(input, &operators)
 }
+
+#[cfg(test)]
+mod tests {
+    use super::super::fs_utils::{read_example, read_input};
+    use super::*;
+
+    #[test]
+    fn test_task01() {
+        let input = read_example(7, 1);
+        assert_eq!(task01(&input), "3749");
+    }
+
+    #[test]
+    fn run_task01() {
+        let input = read_input(7);
+        assert_eq!(task01(&input), "42283209483350");
+    }
+
+    #[test]
+    fn test_task02() {
+        let input = read_example(7, 1);
+        assert_eq!(task02(&input), "11387");
+    }
+
+    #[test]
+    fn run_task02() {
+        let input = read_input(7);
+        assert_eq!(task02(&input), "1026766857276279");
+    }
+}
