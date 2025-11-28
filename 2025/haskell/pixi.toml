@@ -1,0 +1,11 @@
+[workspace]
+authors = ["Tim Adler <tim+github@emrys-merlin.de>"]
+channels = ["conda-forge"]
+name = "haskell"
+platforms = ["linux-64"]
+version = "0.1.0"
+
+[tasks]
+
+[dependencies]
+ghc-bootstrap = ">=9.12.2,<10"
