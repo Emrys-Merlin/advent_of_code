@@ -75,7 +75,8 @@ executable aoc2025
     build-depends:
         base >=4.18,
         filepath,
-        optparse-applicative >=0.19
+        optparse-applicative >=0.19,
+        time >= 1.14
 
 
     -- Directories containing source files.

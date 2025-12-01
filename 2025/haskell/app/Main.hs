@@ -1,5 +1,6 @@
 module Main where
 
+import Data.Time.Clock (getCurrentTime, diffUTCTime)
 import Options.Applicative
 import System.FilePath ((</>))
 import Text.Printf (printf)
@@ -60,4 +61,8 @@ main = do
              then "../inputs" </> (input_name d)
              else "../examples" </> (example_name d e)
   content <- readFile path
-  putStrLn $ solver content
+  start <- getCurrentTime
+  let result = solver content
+  end <- getCurrentTime
+  putStrLn result
+  putStrLn $ "Time taken: " ++ show (diffUTCTime end start)
