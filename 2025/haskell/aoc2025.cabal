@@ -78,7 +78,7 @@ executable aoc2025
         filepath,
         optparse-applicative >=0.19,
         time >= 1.14,
-        split,
+        split >= 0.2
 
 
     -- Directories containing source files.

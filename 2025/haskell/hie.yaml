@@ -1,0 +1,5 @@
+cradle:
+  cabal:
+    - path: "."
+      component: "exe:aoc2025"
+

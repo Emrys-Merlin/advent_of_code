@@ -14,34 +14,33 @@ task02 content =
   in show $ repeatsInRanges ranges
 
 doublesInRanges :: [String] -> Int
-doublesInRanges [] = 0
-doublesInRanges (range:remaining_ranges) = (doublesInRange range) + (doublesInRanges remaining_ranges)
+doublesInRanges = foldr ((+) . doublesInRange) 0
 
 doublesInRange :: String -> Int
 doublesInRange range =
   let (left, right) = splitOnce range
       start = stringToInt left
-      stop = (stringToInt right) + 1 -- I want half-open intervals
+      stop = stringToInt right + 1 -- I want half-open intervals
   in countDoubles start stop
 
 countDoubles :: Int -> Int -> Int
 countDoubles start stop =
-  if (start == stop)
+  if start == stop
   then 0
   else
     let new_count = if isDouble start then start else 0
-    in new_count + (countDoubles (start + 1) stop)
+    in new_count + countDoubles (start + 1) stop
 
 isDouble :: Int -> Bool
 isDouble candidate =
   let c = intToString candidate
       l = length c
-  in if even l then isEvenDouble c else False
+  in (even l && isEvenDouble c)
 
 isEvenDouble :: String -> Bool
 isEvenDouble candidate =
   let (left, right) = splitAt middle candidate
-      middle = (length candidate) `div` 2
+      middle = length candidate `div` 2
   in left == right
 
 repeatsInRanges :: [String] -> Int
@@ -49,8 +48,8 @@ repeatsInRanges [] = 0
 repeatsInRanges (range:remaining_ranges) =
   let (left, right) = splitOnce range
       start = stringToInt left
-      stop = (stringToInt right) + 1
-  in (repeatsInRange start stop) + repeatsInRanges remaining_ranges
+      stop = stringToInt right + 1
+  in repeatsInRange start stop + repeatsInRanges remaining_ranges
 
 repeatsInRange :: Int -> Int -> Int
 repeatsInRange start stop =
@@ -62,11 +61,11 @@ isRepeat :: String -> Bool
 isRepeat candidate =
   let l = length candidate
       divs = divisors l
-  in (isDivRepeat candidate divs)
+  in isDivRepeat candidate divs
 
 isDivRepeat :: String -> [Int] -> Bool
 isDivRepeat _ [] = False
-isDivRepeat candidate (divisor:remaining_divisors) = (isNRepeat candidate divisor) || (isDivRepeat candidate remaining_divisors)
+isDivRepeat candidate (divisor:remaining_divisors) = isNRepeat candidate divisor || isDivRepeat candidate remaining_divisors
 
 isNRepeat :: String -> Int -> Bool
 isNRepeat candidate n =
@@ -74,7 +73,7 @@ isNRepeat candidate n =
     LT -> error "This should not happen"
     EQ -> True
     GT -> let (left, right) = splitAt n candidate
-          in (left `isPrefixOf` right) && (isNRepeat right n)
+          in (left `isPrefixOf` right) && isNRepeat right n
 
 -- Could be optimized to go up to sqrt
 divisors :: Int -> [Int]
@@ -86,7 +85,7 @@ splitOnce s =
   in (left, tail right)
 
 stringToInt :: String -> Int
-stringToInt s = read s
+stringToInt = read
 
 intToString :: Int -> String
-intToString i = show i
+intToString = show

@@ -57,4 +57,4 @@ extractCyclesRemainder (direction:offset_str) =
 
 
 stringToInt :: String -> Int
-stringToInt s = read s
+stringToInt = read
