@@ -1,6 +1,10 @@
 module Main where
 
-import Data.Time.Clock (getCurrentTime, diffUTCTime)
+import Control.Exception
+import Control.DeepSeq
+import Formatting
+import Formatting.Clock
+import System.Clock
 import Options.Applicative
 import System.FilePath ((</>))
 import Text.Printf (printf)
@@ -64,8 +68,8 @@ main = do
              then "../inputs" </> inputName d
              else "../examples" </> exampleName d e
   content <- readFile path
-  start <- getCurrentTime
-  let result = solver content
-  end <- getCurrentTime
+  start <- getTime Monotonic
+  result <- evaluate $ force solver content
+  end <- getTime Monotonic
   putStrLn result
-  putStrLn $ "Time taken: " ++ show (diffUTCTime end start)
+  fprintLn timeSpecs start end
