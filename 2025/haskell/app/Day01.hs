@@ -1,5 +1,7 @@
 module Day01 (task01, task02) where
 
+import Utils
+
 task01 :: String -> String
 task01 content =
   let lineList = lines content
@@ -55,6 +57,3 @@ extractCyclesRemainder (direction:offset_str) =
       signed_remainder = if (sign > 0) || (remainder == 0) then remainder else remainder - 100
   in (cycles, signed_remainder)
 
-
-stringToInt :: String -> Int
-stringToInt = read

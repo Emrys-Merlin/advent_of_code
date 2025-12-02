@@ -46,11 +46,11 @@ optsInfo = info (optionsParser <**> helper)
   <> progDesc "Run an AoC solution for a given day and task")
 
 -- Build input file names
-input_name :: Int -> String
-input_name day = printf "day%02d.txt" day
+inputName :: Int -> String
+inputName = printf "day%02d.txt"
 
-example_name :: Int -> Int -> String
-example_name day example = printf "day%02d_%02d.txt" day example
+exampleName :: Int -> Int -> String
+exampleName = printf "day%02d_%02d.txt"
 
 
 main :: IO ()
@@ -61,8 +61,8 @@ main = do
       e = example opts
       solver = solve d t
       path = if e < 0
-             then "../inputs" </> (input_name d)
-             else "../examples" </> (example_name d e)
+             then "../inputs" </> inputName d
+             else "../examples" </> exampleName d e
   content <- readFile path
   start <- getCurrentTime
   let result = solver content

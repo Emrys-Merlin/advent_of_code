@@ -2,6 +2,8 @@ module Day02 (task01, task02) where
 
 import Data.List
 import Data.List.Split
+import Data.Maybe
+import Utils
 
 task01 :: String -> String
 task01 content =
@@ -18,7 +20,7 @@ doublesInRanges = foldr ((+) . doublesInRange) 0
 
 doublesInRange :: String -> Int
 doublesInRange range =
-  let (left, right) = splitOnce range
+  let (left, right) = fromMaybe (error "Separator not found") (splitOnce range '-')
       start = stringToInt left
       stop = stringToInt right + 1 -- I want half-open intervals
   in countDoubles start stop
@@ -46,7 +48,7 @@ isEvenDouble candidate =
 repeatsInRanges :: [String] -> Int
 repeatsInRanges [] = 0
 repeatsInRanges (range:remaining_ranges) =
-  let (left, right) = splitOnce range
+  let (left, right) = fromMaybe (error "Separator not found") (splitOnce range '-')
       start = stringToInt left
       stop = stringToInt right + 1
   in repeatsInRange start stop + repeatsInRanges remaining_ranges
@@ -79,13 +81,3 @@ isNRepeat candidate n =
 divisors :: Int -> [Int]
 divisors n = [x | x <- [1..(n-1)], n `mod` x == 0]
 
-splitOnce :: String -> (String, String)
-splitOnce s =
-  let (left, right) = break (== '-') s
-  in (left, tail right)
-
-stringToInt :: String -> Int
-stringToInt = read
-
-intToString :: Int -> String
-intToString = show
