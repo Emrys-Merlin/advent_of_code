@@ -67,6 +67,7 @@ executable aoc2025
     -- Modules included in this executable, other than Main.
     other-modules:
         Day01
+        Day02
 
     -- LANGUAGE extensions used by modules in this package.
     -- other-extensions:
@@ -76,11 +77,12 @@ executable aoc2025
         base >=4.18,
         filepath,
         optparse-applicative >=0.19,
-        time >= 1.14
+        time >= 1.14,
+        split,
 
 
     -- Directories containing source files.
     hs-source-dirs:   app
 
     -- Base language which the package is written in.
-    default-language: GHC2024
+    default-language: GHC2021

@@ -5,12 +5,15 @@ import Options.Applicative
 import System.FilePath ((</>))
 import Text.Printf (printf)
 import qualified Day01
+import qualified Day02
 
 -- Map to task solver
 solve :: Int -> Int -> (String -> String)
 solve day task = case (day, task) of
   (1, 1) -> Day01.task01
   (1, 2) -> Day01.task02
+  (2, 1) -> Day02.task01
+  (2, 2) -> Day02.task02
   _      -> \_ -> error "Unknown day/task"
 
 -- CLI handling
