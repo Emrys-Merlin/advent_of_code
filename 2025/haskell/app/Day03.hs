@@ -24,30 +24,21 @@ totalJoltage :: [Bank] -> Int -> Int
 totalJoltage banks n = sum (map (`toJoltage` n) banks)
 
 toJoltage :: Bank -> Int -> Int
-toJoltage bank n = digitsToJoltage $ toJoltageDigits bank (replicate n 0)
+toJoltage bank n = digitsToJoltage $ toJoltageDigits bank n
 
-toJoltageDigits :: Bank -> Digits -> [Int]
-toJoltageDigits [] digits = digits
-toJoltageDigits (battery:remaining_bank) digits =
-  let new_digits = updateDigits battery digits
-      rest_length = length remaining_bank
-      digits_length = length new_digits
-  in
-    if digits_length > rest_length
-     then
-       let (digit:other_digits) = new_digits
-       in digit:toJoltageDigits remaining_bank other_digits
-     else
-      toJoltageDigits remaining_bank new_digits
+toJoltageDigits :: Bank -> Int -> [Int]
+toJoltageDigits _ 0 = []
+toJoltageDigits bank n =
+  let candidates = take (length bank - new_n) bank
+      new_n = n - 1
+      digit_idx = idxMax candidates
+      digit = bank !! digit_idx
+      remaining_bank = drop (digit_idx + 1) bank
+  in digit:toJoltageDigits remaining_bank new_n
 
-updateDigits :: Int -> Digits -> [Int]
-updateDigits _ [] = []
-updateDigits battery (digit:rest) =
-  if battery > digit
-  then battery:replicate (length rest) 0
-  else
-    digit:updateDigits battery rest
-
+idxMax :: Bank -> Int
+idxMax bank = idx
+  where (_, idx) = foldl (\(max_battery, max_idx) (battery, curr_idx) -> if battery > max_battery then (battery, curr_idx) else (max_battery, max_idx)) (0, 0) (zip bank [0..])
 
 digitsToJoltage :: Digits -> Int
 digitsToJoltage = foldl (\acc d -> acc * 10 + d) 0
