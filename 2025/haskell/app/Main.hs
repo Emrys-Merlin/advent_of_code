@@ -10,6 +10,7 @@ import System.FilePath ((</>))
 import Text.Printf (printf)
 import qualified Day01
 import qualified Day02
+import qualified Day03
 
 -- Map to task solver
 solve :: Int -> Int -> (String -> String)
@@ -18,6 +19,8 @@ solve day task = case (day, task) of
   (1, 2) -> Day01.task02
   (2, 1) -> Day02.task01
   (2, 2) -> Day02.task02
+  (3, 1) -> Day03.task01
+  (3, 2) -> Day03.task02
   _      -> \_ -> error "Unknown day/task"
 
 -- CLI handling

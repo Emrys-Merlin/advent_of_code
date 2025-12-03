@@ -69,6 +69,7 @@ executable aoc2025
         Utils
         Day01
         Day02
+        Day03
 
     -- LANGUAGE extensions used by modules in this package.
     -- other-extensions:
