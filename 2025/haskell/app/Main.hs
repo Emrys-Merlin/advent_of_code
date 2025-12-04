@@ -11,6 +11,7 @@ import Text.Printf (printf)
 import qualified Day01
 import qualified Day02
 import qualified Day03
+import qualified Day04
 
 -- Map to task solver
 solve :: Int -> Int -> (String -> String)
@@ -21,6 +22,8 @@ solve day task = case (day, task) of
   (2, 2) -> Day02.task02
   (3, 1) -> Day03.task01
   (3, 2) -> Day03.task02
+  (4, 1) -> Day04.task01
+  (4, 2) -> Day04.task02
   _      -> \_ -> error "Unknown day/task"
 
 -- CLI handling

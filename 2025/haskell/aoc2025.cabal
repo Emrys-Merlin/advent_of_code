@@ -70,6 +70,7 @@ executable aoc2025
         Day01
         Day02
         Day03
+        Day04
 
     -- LANGUAGE extensions used by modules in this package.
     -- other-extensions:
@@ -83,7 +84,8 @@ executable aoc2025
         split >= 0.2,
         clock >= 0.8,
         formatting >= 0.7,
-        deepseq >= 1.4
+        deepseq >= 1.4,
+        containers >= 0.6,
 
 
     -- Directories containing source files.
