@@ -6,21 +6,21 @@ type Coord = (Int, Int)
 
 task01 :: String -> String
 task01 content =
-  let coord_set = Set.fromList $ extractCoords content
+  let coord_set = Set.fromDistinctAscList $ extractCoords content
   in show $ accessiblePaperRole coord_set
 
 task02 :: String -> String
 task02 content =
-  let coord_set = Set.fromList (extractCoords content)
+  let coord_set = Set.fromDistinctAscList (extractCoords content)
   in show $ recursiveAccessiblePaperRole coord_set
 
 accessiblePaperRole :: Set.Set Coord -> Int
-accessiblePaperRole coord_set = length $ Set.filter (`isAccessible` coord_set) coord_set
+accessiblePaperRole coord_set = Set.size $ Set.filter (`isAccessible` coord_set) coord_set
 
 recursiveAccessiblePaperRole :: Set.Set Coord -> Int
 recursiveAccessiblePaperRole coord_set =
   let new_coord_set = Set.filter (`isNotAccessible` coord_set) coord_set
-      accessible = length coord_set - length new_coord_set
+      accessible = Set.size coord_set - Set.size new_coord_set
   in accessible + if accessible /= 0
      then recursiveAccessiblePaperRole new_coord_set
      else 0
