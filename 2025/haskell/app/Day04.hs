@@ -6,27 +6,27 @@ type Coord = (Int, Int)
 
 task01 :: String -> String
 task01 content =
-  let coord_list = extractCoords content
-  in show $ accessiblePaperRole coord_list
+  let coord_set = Set.fromList $ extractCoords content
+  in show $ accessiblePaperRole coord_set
 
 task02 :: String -> String
 task02 content =
-  let coord_list = extractCoords content
-  in show $ recursiveAccessiblePaperRole coord_list
+  let coord_set = Set.fromList (extractCoords content)
+  in show $ recursiveAccessiblePaperRole coord_set
 
-accessiblePaperRole :: [Coord] -> Int
-accessiblePaperRole coord_list =
-  let coord_set = Set.fromList coord_list
-  in sum $ map (\x -> if isAccessible x coord_set then 1 else 0) coord_list
+accessiblePaperRole :: Set.Set Coord -> Int
+accessiblePaperRole coord_set = length $ Set.filter (`isAccessible` coord_set) coord_set
 
-recursiveAccessiblePaperRole :: [Coord] -> Int
-recursiveAccessiblePaperRole coord_list =
-  let coord_set = Set.fromList coord_list
-      new_coord_list = [x | x <- coord_list, not (isAccessible x coord_set)]
-      accessible = length coord_list - length new_coord_list
+recursiveAccessiblePaperRole :: Set.Set Coord -> Int
+recursiveAccessiblePaperRole coord_set =
+  let new_coord_set = Set.filter (`isNotAccessible` coord_set) coord_set
+      accessible = length coord_set - length new_coord_set
   in accessible + if accessible /= 0
-    then recursiveAccessiblePaperRole new_coord_list
+    then recursiveAccessiblePaperRole new_coord_set
     else 0
+
+isNotAccessible :: Coord -> Set.Set Coord -> Bool
+isNotAccessible coord coords = not $ isAccessible coord coords
 
 isAccessible :: Coord -> Set.Set Coord -> Bool
 isAccessible coord coords = length (Set.intersection neighbors coords) < 4
