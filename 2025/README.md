@@ -6,12 +6,15 @@ I decided to learn [Haskell](https://haskell.org/) with this year's AoC. Expect 
 
 | Day | 01 | 02 | 03 | 04 | 05 | 06 | 07 | 08 | 09 | 10 | 11 | 12 |
 | --- | -- | -- | -- | -- | -- | -- | -- | -- | -- | -- | -- | -- |
-| Task 01 | [![haskell]](./haskell/app/Day01.hs) | [![haskell]](./haskell/app/Day02.hs) | [![haskell]](./haskell/app/Day03.hs) | [![haskell]](./haskell/app/Day04.hs) | [![haskell]](./haskell/app/Day05.hs) | [![haskell]](./haskell/app/Day06.hs) | | | | | | |
-| Task 02 | [![haskell]](./haskell/app/Day01.hs) | [![haskell]](./haskell/app/Day02.hs) | [![haskell]](./haskell/app/Day03.hs) | [![haskell]](./haskell/app/Day04.hs) | [![haskell]](./haskell/app/Day05.hs) | [![haskell]](./haskell/app/Day06.hs) | | | | | | |
+| Task 01 | [![haskell]](./haskell/app/Day01.hs) | [![haskell]](./haskell/app/Day02.hs) | [![haskell]](./haskell/app/Day03.hs) | [![haskell]](./haskell/app/Day04.hs) | [![haskell]](./haskell/app/Day05.hs) | [![haskell]](./haskell/app/Day06.hs) | [![haskell]](./haskell/app/Day07.hs)[![ferris]](https://github.com/fspoettel/advent-of-code-2025/blob/main/src/bin/07.rs)[^1] | | | | | |
+| Task 02 | [![haskell]](./haskell/app/Day01.hs) | [![haskell]](./haskell/app/Day02.hs) | [![haskell]](./haskell/app/Day03.hs) | [![haskell]](./haskell/app/Day04.hs) | [![haskell]](./haskell/app/Day05.hs) | [![haskell]](./haskell/app/Day06.hs) | [![haskell]](./haskell/app/Day07.hs)[![ferris]](https://github.com/fspoettel/advent-of-code-2025/blob/main/src/bin/07.rs)[^1] | | | | | |
 
 
 The Haskell icon has been released into the public domain and can be found [here](https://commons.wikimedia.org/wiki/File:Haskell-Logo.svg).
+
 The python icon is licensed under the GPL and can be found [here](https://en.m.wikipedia.org/wiki/File:Python-logo-notext.svg).
+
+The ferris icon is licensed under CC0 and can be found [here](https://commons.wikimedia.org/wiki/File:Original_Ferris.svg).
 
 ## Structure
 
@@ -21,3 +24,6 @@ The python icon is licensed under the GPL and can be found [here](https://en.m.w
 
 [python]: https://upload.wikimedia.org/wikipedia/commons/c/c3/Python-logo-notext.svg
 [haskell]: https://upload.wikimedia.org/wikipedia/commons/1/1c/Haskell-Logo.svg
+[ferris]: https://upload.wikimedia.org/wikipedia/commons/0/0f/Original_Ferris.svg
+
+[^1]: I pair-coded the Rust solution together with [@fspoettel](https://github.com/fspoettel).
