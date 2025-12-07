@@ -14,6 +14,7 @@ import qualified Day03
 import qualified Day04
 import qualified Day05
 import qualified Day06
+import qualified Day07
 
 -- Map to task solver
 solve :: Int -> Int -> (String -> String)
@@ -30,6 +31,8 @@ solve day task = case (day, task) of
   (5, 2) -> Day05.task02
   (6, 1) -> Day06.task01
   (6, 2) -> Day06.task02
+  (7, 1) -> Day07.task01
+  (7, 2) -> Day07.task02
   _      -> \_ -> error "Unknown day/task"
 
 -- CLI handling
