@@ -1,8 +1,7 @@
 module Day09 (task01, task02) where
 
-import Data.Maybe
 import Utils
-import qualified Data.Set as S
+-- import Debug.Trace
 
 task01 :: String -> String
 task01 content = show $ pointsToMaxRectangleArea points
@@ -10,12 +9,10 @@ task01 content = show $ pointsToMaxRectangleArea points
         points = map lineToPoint ls
 
 task02 :: String -> String
-task02 content = show (length ls) ++ "\t" ++ show (length rectangle_areas) ++ "\t" ++ show enclosing_rectangle ++ "\t" ++ show (rectangleArea (fromJust enclosing_rectangle))
+task02 content = show $ pointsToMaxRectangleArea2 points points 0
   where
     ls = lines content
     points = map lineToPoint ls
-    rectangle_areas = pointsToRectangleAreas points
-    enclosing_rectangle = enclosingRectangle points
 
 
 type Point = (Int, Int)
@@ -57,55 +54,38 @@ pointsToMaxRectangleAreaInner _ [] = 0
 pointsToMaxRectangleAreaInner p (q:points) = max (rectangleArea rectangle) (pointsToMaxRectangleAreaInner p points)
   where rectangle = pointPairToRectangle p q
 
--- polygonArea :: [Point] -> Maybe Int
--- polygonArea [] = Nothing
--- polygonArea (p:points) =
---   let double_area = doublePolygonArea p (points ++ [p])
---   in
---     if even double_area
---     then Just (double_area `div` 2)
---     else Nothing
+segmentNextToRectangle :: Point -> Point -> Rectangle -> Bool
+segmentNextToRectangle (px, py) (qx, qy) rect = segment_right <= left || right <= segment_left || segment_down <= up || down <= segment_up
+  where
+    (left, right_p1) = x rect
+    (up, down_p1) = y rect
+    right = right_p1 - 1
+    down = down_p1 - 1
+    segment_left = min px qx
+    segment_right = max px qx
+    segment_up = min py qy
+    segment_down = max py qy
 
--- -- Implements Shoelace formula without factor 2
--- doublePolygonArea :: Point -> [Point] -> Int
--- doublePolygonArea _ [] = 0
--- doublePolygonArea (px, py) ((qx, qy):points) = (py + qy) * (px - qx) + doublePolygonArea (qx, qy) points
+-- This check for validity fails if there are large rectangles outside the boundary
+-- However, this is not the case for the given input.
+rectangleValid :: [Point] -> Rectangle -> Bool
+rectangleValid [] _ = True
+rectangleValid (p:points) rect = foldl (\acc (q, r) -> acc && segmentNextToRectangle q r rect) True (zip (p:points) (points ++ [p]))
 
-pointsToRectangleAreas :: [Point] -> [Int]
-pointsToRectangleAreas [] = []
-pointsToRectangleAreas (point:points) = pointsToRectangleAreasInner point points ++ pointsToRectangleAreas points
+pointsToMaxRectangleArea2 :: [Point] -> [Point] -> Int -> Int
+pointsToMaxRectangleArea2 _ [] curr_max = curr_max
+pointsToMaxRectangleArea2 all_points (p:points) curr_max = pointsToMaxRectangleArea2 all_points points inner_max
+  where inner_max = pointsToMaxRectangleArea2Inner all_points p points curr_max
 
-pointsToRectangleAreasInner :: Point -> [Point] -> [Int]
-pointsToRectangleAreasInner _ [] = []
-pointsToRectangleAreasInner p (q:points) = rectangleArea rectangle:pointsToRectangleAreasInner p points
-  where rectangle = pointPairToRectangle p q
-
-enclosingRectangle :: [Point] -> Maybe Rectangle
-enclosingRectangle [] = Nothing
-enclosingRectangle ((px, py):points) =
-  case maybe_rectangle of
-    Nothing -> Just Rectangle { x = (px, px + 1), y = (py, py + 1)}
-    Just rectangle ->
-      let (minx, maxx) = x rectangle
-          (miny, maxy) = y rectangle
-          new_minx = min minx px
-          new_maxx = max maxx (px + 1)
-          new_miny = min miny py
-          new_maxy = max maxy (py + 1)
-      in Just Rectangle {x = (new_minx, new_maxx), y = (new_miny, new_maxy)}
-  where maybe_rectangle = enclosingRectangle points
-
-boundaryPointList :: [Point] -> [Point]
-boundaryPointList [] = []
-boundaryPointList (p:points) = boundaryPointListInner p (points ++ [p])
-
-boundaryPointListInner :: Point -> [Point] -> [Point]
-boundaryPointListInner _ [] = []
-boundaryPointListInner (px, py) ((qx, qy):points) =
-  let line = if px == qx
-             then [(px, ry) | ry <- [py..(qy-1)]]
-             else [(rx, py) | rx <- [px..(qx-1)]]
-  in line ++ boundaryPointListInner (qx, qy) points
-
-boundaryPointSet :: [Point] -> S.Set Point
-boundaryPointSet = S.fromList
+pointsToMaxRectangleArea2Inner :: [Point] -> Point -> [Point] -> Int -> Int
+pointsToMaxRectangleArea2Inner _ _ [] curr_max = curr_max
+pointsToMaxRectangleArea2Inner all_points p (q:points) curr_max =
+  let rect = pointPairToRectangle p q
+      area = rectangleArea rect
+  in
+    if area <= curr_max
+    then pointsToMaxRectangleArea2Inner all_points p points curr_max
+    else
+      if rectangleValid all_points rect
+      then pointsToMaxRectangleArea2Inner all_points p points area
+      else pointsToMaxRectangleArea2Inner all_points p points curr_max
