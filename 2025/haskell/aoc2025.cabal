@@ -76,6 +76,7 @@ executable aoc2025
         Day07
         Day08
         Day09
+        Day10
 
     -- LANGUAGE extensions used by modules in this package.
     -- other-extensions:
