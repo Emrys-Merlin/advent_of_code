@@ -93,6 +93,9 @@ executable aoc2025
         deepseq >= 1.4,
         containers >= 0.6,
         array >= 0.5,
+        MIP,
+        text,
+        scientific,
 
 
     -- Directories containing source files.
