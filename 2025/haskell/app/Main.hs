@@ -98,6 +98,6 @@ main = do
   start <- getTime Monotonic
   io_result <- evaluate $ force solver content
   result <- io_result
-  end <- getTime Monotonic
   putStrLn result
+  end <- getTime Monotonic
   fprintLn timeSpecs start end
