@@ -99,8 +99,8 @@ main = do
              else "../examples" </> exampleName d e
   content <- readFile path
   start <- getTime Monotonic
-  io_result <- evaluate $ force solver content
-  result <- io_result
-  putStrLn result
+  io_result <- solver content
+  result <- evaluate $ force io_result
   end <- getTime Monotonic
+  putStrLn result
   fprintLn timeSpecs start end
