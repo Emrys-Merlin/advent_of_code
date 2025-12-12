@@ -4,12 +4,24 @@ import Data.List.Split
 import Utils
 -- import Debug.Trace
 
+data FitStatus
+  = Fits
+  | Undecided
+  | DoesNotFit
+  deriving (Eq, Ord, Show, Read, Bounded, Enum)
+
+
 task01 :: String -> String
-task01 content = show count
+task01 content = "Fits: " ++ show fit ++ "\nUndecided: " ++ show undecided ++ "\nDoes not fit: " ++ show does_not_fit
   where
-    (_, regions) = parseContent content
-    count :: Int
-    count = sum $ map (fromEnum . heuristicFit) regions
+    (shapes, regions) = parseContent content
+    fit_status = map (getFitStatus shapes) regions
+    (fit, undecided, does_not_fit) = foldr countStatus (0, 0, 0) fit_status
+
+    countStatus :: FitStatus -> (Int, Int, Int) -> (Int, Int, Int)
+    countStatus Fits (f, u, dnf) = (f+1, u, dnf)
+    countStatus Undecided (f, u, dnf) = (f, u+1, dnf)
+    countStatus DoesNotFit (f, u, dnf) = (f, u, dnf+1)
 
 task02 :: String -> String
 task02 _ = "Freebie"
@@ -46,8 +58,16 @@ parseRegionLine line = (area, counts)
 parseShapeBlock :: String -> Int
 parseShapeBlock block = sum $ map (\c -> fromEnum (c == '#')) block
 
--- Check if fully filled 3x3 shapes fit
-heuristicFit :: (Int, [Int]) -> Bool
-heuristicFit (area, counts) = upper_bound <= area
+fitByArea :: [Int] -> (Int, [Int]) -> Bool
+fitByArea shapes (area, counts) = upper_bound <= area
   where
-    upper_bound = 9 * sum counts
+    upper_bound = sum $ zipWith (*) counts shapes
+
+getFitStatus :: [Int] -> (Int, [Int]) -> FitStatus
+getFitStatus shapes region
+  | enough_by_area = Fits
+  | too_little_by_area = DoesNotFit
+  | otherwise = Undecided
+  where
+      enough_by_area = fitByArea (repeat 9) region
+      too_little_by_area = not $ fitByArea shapes region
