@@ -18,7 +18,7 @@ task01 content = show $ traverseGraph graph "out" ["you"]
 
 -- Exploiting that the graph is acyclic
 task02 :: String -> String
-task02 content = show (srv_to_fft * fft_to_dac * dac_to_out + srv_to_dac * dac_to_fft * fft_to_out)
+task02 content = show result
   where
     graph = parseContent content
     srv_to_fft = countPaths graph "fft" "svr"
@@ -27,6 +27,9 @@ task02 content = show (srv_to_fft * fft_to_dac * dac_to_out + srv_to_dac * dac_t
     srv_to_dac = countPaths graph "dac" "svr"
     dac_to_fft = countPaths graph "fft" "dac"
     fft_to_out = countPaths graph "out" "fft"
+    result = if fft_to_dac == 0
+      then srv_to_dac * dac_to_fft * fft_to_out
+      else srv_to_fft * fft_to_dac * dac_to_out
 
 parseContent :: String -> Graph
 parseContent content = HM.fromList entries
