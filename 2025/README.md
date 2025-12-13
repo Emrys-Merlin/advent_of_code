@@ -6,7 +6,7 @@ I decided to learn [Haskell](https://haskell.org/) with this year's AoC. Expect 
 
 | Day | 01 | 02 | 03 | 04 | 05 | 06 | 07 | 08 | 09 | 10 | 11 | 12 |
 | --- | -- | -- | -- | -- | -- | -- | -- | -- | -- | -- | -- | -- |
-| Task 01 | [![haskell]](./haskell/app/Day01.hs) | [![haskell]](./haskell/app/Day02.hs) | [![haskell]](./haskell/app/Day03.hs) | [![haskell]](./haskell/app/Day04.hs) | [![haskell]](./haskell/app/Day05.hs) | [![haskell]](./haskell/app/Day06.hs) | [![haskell]](./haskell/app/Day07.hs)[![ferris]](https://github.com/fspoettel/advent-of-code-2025/blob/main/src/bin/07.rs)[^1] | [![haskell]](./haskell/app/Day08.hs) | [![haskell]](./haskell/app/Day09.hs) | [![haskell]](./haskell/app/Day10.hs) | [![haskell]](./haskell/app/Day11.hs) | [![haskell]](./haskell/app/Day12.hs) |
+| Task 01 | [![haskell]](./haskell/app/Day01.hs) | [![haskell]](./haskell/app/Day02.hs) | [![haskell]](./haskell/app/Day03.hs) | [![haskell]](./haskell/app/Day04.hs) | [![haskell]](./haskell/app/Day05.hs) | [![haskell]](./haskell/app/Day06.hs) | [![haskell]](./haskell/app/Day07.hs)[![ferris]](https://github.com/fspoettel/advent-of-code-2025/blob/main/src/bin/07.rs)[^1] | [![haskell]](./haskell/app/Day08.hs) | [![haskell]](./haskell/app/Day09.hs) | [![haskell]](./haskell/app/Day10.hs) | [![haskell]](./haskell/app/Day11.hs) | [![haskell]](./haskell/app/Day11.hs) |
 | Task 02 | [![haskell]](./haskell/app/Day01.hs) | [![haskell]](./haskell/app/Day02.hs) | [![haskell]](./haskell/app/Day03.hs) | [![haskell]](./haskell/app/Day04.hs) | [![haskell]](./haskell/app/Day05.hs) | [![haskell]](./haskell/app/Day06.hs) | [![haskell]](./haskell/app/Day07.hs)[![ferris]](https://github.com/fspoettel/advent-of-code-2025/blob/main/src/bin/07.rs)[^1] | [![haskell]](./haskell/app/Day08.hs) | [![haskell]](./haskell/app/Day09.hs) | [![haskell]](./haskell/app/Day10.hs)[^2] | [![haskell]](./haskell/app/Day11.hs) | :star: |
 
 
@@ -27,4 +27,4 @@ The ferris icon is licensed under CC0 and can be found [here](https://commons.wi
 [ferris]: https://upload.wikimedia.org/wikipedia/commons/0/0f/Original_Ferris.svg
 
 [^1]: I pair-coded the Rust solution together with [@fspoettel](https://github.com/fspoettel).
-[^2]: Using Haskell bindings for the [CBC](https://github.com/coin-or/Cbc) (Con-or branch and cut) mixed integer linear programming solver.
+[^2]: ~~Using Haskell bindings for the [CBC](https://github.com/coin-or/Cbc) (Con-or branch and cut) mixed integer linear programming solver.~~ Thanks to [this](https://github.com/Emrys-Merlin/advent_of_code/commit/aad21f124ba3cace74c52c9f0394aa3d6946f309) (in my opinion) super elegant approach, I was able to solve the task without a MIP solver.
