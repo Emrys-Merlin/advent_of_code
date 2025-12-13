@@ -22,32 +22,32 @@ import qualified Day11
 import qualified Day12
 
 -- Map to task solver
-solve :: Int -> Int -> (String -> IO String)
+solve :: Int -> Int -> (String -> String)
 solve day task = case (day, task) of
-  (1, 1) -> return . Day01.task01
-  (1, 2) -> return . Day01.task02
-  (2, 1) -> return . Day02.task01
-  (2, 2) -> return . Day02.task02
-  (3, 1) -> return . Day03.task01
-  (3, 2) -> return . Day03.task02
-  (4, 1) -> return . Day04.task01
-  (4, 2) -> return . Day04.task02
-  (5, 1) -> return . Day05.task01
-  (5, 2) -> return . Day05.task02
-  (6, 1) -> return . Day06.task01
-  (6, 2) -> return . Day06.task02
-  (7, 1) -> return . Day07.task01
-  (7, 2) -> return . Day07.task02
-  (8, 1) -> return . Day08.task01
-  (8, 2) -> return . Day08.task02
-  (9, 1) -> return . Day09.task01
-  (9, 2) -> return . Day09.task02
-  (10, 1) -> return . Day10.task01
+  (1, 1) -> Day01.task01
+  (1, 2) -> Day01.task02
+  (2, 1) -> Day02.task01
+  (2, 2) -> Day02.task02
+  (3, 1) -> Day03.task01
+  (3, 2) -> Day03.task02
+  (4, 1) -> Day04.task01
+  (4, 2) -> Day04.task02
+  (5, 1) -> Day05.task01
+  (5, 2) -> Day05.task02
+  (6, 1) -> Day06.task01
+  (6, 2) -> Day06.task02
+  (7, 1) -> Day07.task01
+  (7, 2) -> Day07.task02
+  (8, 1) -> Day08.task01
+  (8, 2) -> Day08.task02
+  (9, 1) -> Day09.task01
+  (9, 2) -> Day09.task02
+  (10, 1) -> Day10.task01
   (10, 2) -> Day10.task02
-  (11, 1) -> return . Day11.task01
-  (11, 2) -> return . Day11.task02
-  (12, 1) -> return . Day12.task01
-  (12, 2) -> return . Day12.task02
+  (11, 1) -> Day11.task01
+  (11, 2) -> Day11.task02
+  (12, 1) -> Day12.task01
+  (12, 2) -> Day12.task02
   _      -> \_ -> error "Unknown day/task"
 
 -- CLI handling
@@ -99,8 +99,7 @@ main = do
              else "../examples" </> exampleName d e
   content <- readFile path
   start <- getTime Monotonic
-  io_result <- solver content
-  result <- evaluate $ force io_result
-  end <- getTime Monotonic
+  result <- evaluate $ force solver content
   putStrLn result
+  end <- getTime Monotonic
   fprintLn timeSpecs start end
