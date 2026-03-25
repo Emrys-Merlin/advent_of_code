@@ -1,0 +1,28 @@
+[[language]]
+name = "python"
+language-servers = ["basedpyright", "ruff"]
+auto-format = true
+formatter = { command = "ruff", args = ["format", "-"]}
+
+[language-server.basedpyright]
+command = "pixi"
+args = [
+  "run",
+  "-e",
+  "dev",
+  "basedpyright-langserver",
+  "--stdio",
+]
+
+[language-server.ruff]
+command = "pixi"
+args = [
+  "run",
+  "-e",
+  "dev",
+  "ruff",
+  "server",
+]
+
+[language-server.basedpyright.config]
+basedpyright.analysis.diagnosticMode = "openFilesOnly"
