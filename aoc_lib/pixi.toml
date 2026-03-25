@@ -9,8 +9,26 @@ channels = [
 ]
 preview = ["pixi-build"]
 
+[environments]
+dev = { features = ["dev"], solve-group = "default" }
+
 [dependencies]
 aoc-lib = { path = "." }
+
+[feature.dev.dependencies]
+pytest = "*"
+basedpyright = "*"
+ruff = "*"
+pytest-benchmark = "*"
+
+[feature.dev.tasks]
+test       = { cmd = "pytest tests/" } # , depends-on = ["develop"]
+benchmark =  { cmd = "pytest benchmarks/ --benchmark-only"}
+
+[tasks]
+# develop    = "maturin develop --release"
+# build      = "maturin build --release"
+# publish    = "maturin publish"
 
 [package]
 name = "aoc-lib"
@@ -25,5 +43,3 @@ python = ">=3.13"
 
 [package.run-dependencies]
 python = ">=3.13"
-
-[tasks]

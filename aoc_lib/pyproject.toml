@@ -15,5 +15,17 @@ build-backend = "maturin"
 
 [tool.maturin]
 features = ["pyo3/extension-module"]
-module-name = "aoc_helper.rust"  # the Rust extension becomes this submodule
+module-name = "aoc_lib.rust"  # the Rust extension becomes this submodule
 manifest-path = "rust/Cargo.toml"
+python-source = "src"
+
+[tool.pyright]
+pythonVersion = "3.13"
+
+[[tool.pyright.executionEnvironments]]
+root = "benchmarks"
+reportUnusedParameter = "none"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py", "bench_*.py"]
