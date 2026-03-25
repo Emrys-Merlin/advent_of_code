@@ -1,0 +1,29 @@
+[workspace]
+authors = ["Tim Adler <tim@emrys-merlin.de>"]
+name = "aoc-lib"
+platforms = ["win-64", "linux-64", "osx-64", "osx-arm64", "linux-aarch64"]
+version = "0.1.0"
+channels = [
+  "https://prefix.dev/pixi-build-backends",
+  "https://prefix.dev/conda-forge",
+]
+preview = ["pixi-build"]
+
+[dependencies]
+aoc-lib = { path = "." }
+
+[package]
+name = "aoc-lib"
+version= "0.1.0"
+
+[package.build]
+backend = { name = "pixi-build-python", version = "*" }
+
+[package.host-dependencies]
+maturin = ">=1.4,<2"
+python = ">=3.13"
+
+[package.run-dependencies]
+python = ">=3.13"
+
+[tasks]

@@ -1,0 +1,19 @@
+[project]
+name = "aoc-lib"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Tim Adler", email = "tim@emrys-merlin.de" }
+]
+requires-python = ">=3.13"
+dependencies = []
+
+[build-system]
+requires = ["maturin>=1.4,<2.0"]
+build-backend = "maturin"
+
+[tool.maturin]
+features = ["pyo3/extension-module"]
+module-name = "aoc_helper.rust"  # the Rust extension becomes this submodule
+manifest-path = "rust/Cargo.toml"
