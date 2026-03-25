@@ -26,3 +26,19 @@ args = [
 
 [language-server.basedpyright.config]
 basedpyright.analysis.diagnosticMode = "openFilesOnly"
+
+[[language]]
+name = "rust"
+auto-format = true
+
+[language-server.rust-analyzer.config]
+inlayHints.bindingModeHints.enable = false
+inlayHints.closingBraceHints.minLines = 10
+inlayHints.closureReturnTypeHints.enable = "with_block"
+inlayHints.discriminantHints.enable = "fieldless"
+inlayHints.lifetimeElisionHints.enable = "skip_trivial"
+inlayHints.typeHints.hideClosureInitialization = false
+cargo.extraEnv = { PATH = ".pixi/envs/default/bin:$PATH" }
+
+[language-server.rust-analyzer.config.check]
+command = "clippy"   # use clippy for inline diagnostics instead of cargo check

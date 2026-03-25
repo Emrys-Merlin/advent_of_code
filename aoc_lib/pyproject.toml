@@ -21,6 +21,7 @@ python-source = "src"
 
 [tool.pyright]
 pythonVersion = "3.13"
+reportMissingModuleSource = "none"
 
 [[tool.pyright.executionEnvironments]]
 root = "benchmarks"

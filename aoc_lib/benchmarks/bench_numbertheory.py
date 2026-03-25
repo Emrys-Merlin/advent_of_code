@@ -1,6 +1,8 @@
 import pytest
 from pytest_benchmark.fixture import BenchmarkFixture
-from aoc_lib.numbertheory import gcd, extended_euclidean_algorithm
+import aoc_lib.numbertheory as pnt
+import aoc_lib.rust.numbertheory as rnt
+
 
 CASES = [
     (12, 8),
@@ -15,7 +17,7 @@ def test_gcd_python(
     m: int,
     n: int,
 ) -> None:
-    benchmark(gcd, m, n)
+    benchmark(pnt.gcd, m, n)
 
 
 @pytest.mark.parametrize("m,n", CASES)
@@ -24,4 +26,22 @@ def test_eea_python(
     m: int,
     n: int,
 ) -> None:
-    benchmark(extended_euclidean_algorithm, m, n)
+    benchmark(pnt.extended_euclidean_algorithm, m, n)
+
+
+@pytest.mark.parametrize("m,n", CASES)
+def test_gcd_rust(
+    benchmark: BenchmarkFixture,
+    m: int,
+    n: int,
+) -> None:
+    benchmark(rnt.gcd, m, n)
+
+
+@pytest.mark.parametrize("m,n", CASES)
+def test_eea_rust(
+    benchmark: BenchmarkFixture,
+    m: int,
+    n: int,
+) -> None:
+    benchmark(rnt.extended_euclidean_algorithm, m, n)

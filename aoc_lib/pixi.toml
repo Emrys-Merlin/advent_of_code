@@ -13,22 +13,27 @@ preview = ["pixi-build"]
 dev = { features = ["dev"], solve-group = "default" }
 
 [dependencies]
-aoc-lib = { path = "." }
+# aoc-lib = { path = "." }
+python = ">=3.13"
+rust = ">=1.80"
+
+[tasks]
+# build      = "maturin build --release"
+# publish    = "maturin publish"
 
 [feature.dev.dependencies]
+maturin = ">=1.4,<2"
+uv = "*"  # maturin needs uv or pip
 pytest = "*"
 basedpyright = "*"
 ruff = "*"
 pytest-benchmark = "*"
 
 [feature.dev.tasks]
-test       = { cmd = "pytest tests/" } # , depends-on = ["develop"]
-benchmark =  { cmd = "pytest benchmarks/ --benchmark-only"}
-
-[tasks]
-# develop    = "maturin develop --release"
-# build      = "maturin build --release"
-# publish    = "maturin publish"
+test       = { cmd = "pytest tests/", depends-on = ["develop"] } #
+benchmark =  { cmd = "pytest benchmarks/ --benchmark-only", depends-on = ["develop-r"]}
+develop    = "maturin develop --uv"
+develop-r = "maturin develop --uv --release"
 
 [package]
 name = "aoc-lib"
