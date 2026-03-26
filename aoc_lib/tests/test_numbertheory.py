@@ -1,9 +1,9 @@
 from typing import Callable
 
 import pytest
-from aoc_lib.numbertheory import extended_euclidean_algorithm as eea_python
-from aoc_lib.numbertheory import lcm as lcm_python
-from aoc_lib.numbertheory import gcd as gcd_python
+from aoc_lib.python.numbertheory import extended_euclidean_algorithm as eea_python
+from aoc_lib.python.numbertheory import lcm as lcm_python
+from aoc_lib.python.numbertheory import gcd as gcd_python
 from aoc_lib.rust.numbertheory import gcd as gcd_rust
 from aoc_lib.rust.numbertheory import extended_euclidean_algorithm as eea_rust
 from aoc_lib.rust.numbertheory import lcm as lcm_rust
