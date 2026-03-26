@@ -1,6 +1,6 @@
 from __future__ import annotations
-from typing import Annotated
 from collections.abc import Sequence, Mapping, Hashable
+from dataclasses import dataclass, field
 
 
 class DUSet:
@@ -40,13 +40,16 @@ class DUSet:
 type Edge[T: Hashable] = tuple[T, T]
 
 
+@dataclass(frozen=True)
+class KruskalResult[Node: Hashable]:
+    total: int = 0
+    mst: list[Edge[Node]] = field(default_factory=list)
+
+
 def kruskal[Node: Hashable](
     nodes: Sequence[Node],
     edges: Mapping[Edge[Node], int],
-) -> tuple[
-    Annotated[int, "total_weight"],
-    Annotated[list[Edge[Node]], "minimum_spanning_tree"],
-]:
+) -> KruskalResult[Node]:
     """Kruskal's algorithm for minimum spanning trees.
 
     https://en.wikipedia.org/wiki/Kruskal%27s_algorithm
@@ -57,7 +60,7 @@ def kruskal[Node: Hashable](
 
     """
     if len(nodes) <= 1:
-        return 0, []
+        return KruskalResult()
 
     components = {node: DUSet() for node in nodes}
 
@@ -71,6 +74,6 @@ def kruskal[Node: Hashable](
             mst.append(edge)
 
         if x.find().size == len(nodes):
-            return total_weight, mst
+            return KruskalResult(total_weight, mst)
 
     raise ValueError("The graph is disconnected.")

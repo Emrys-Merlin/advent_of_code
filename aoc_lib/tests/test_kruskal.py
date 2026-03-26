@@ -18,27 +18,27 @@ def test_triangle() -> None:
         (3, 1): 3,
     }
 
-    total, mst = kruskal(nodes, edges)
+    result = kruskal(nodes, edges)
 
-    assert total == 3
-    assert len(mst) == 2
+    assert result.total == 3
+    assert len(result.mst) == 2
 
 
 def test_single_node() -> None:
     nodes = [1]
     edges: dict[tuple[int, int], int] = {}
 
-    total, mst = kruskal(nodes, edges)
+    result = kruskal(nodes, edges)
 
-    assert total == 0
-    assert len(mst) == 0
+    assert result.total == 0
+    assert len(result.mst) == 0
 
 
 def test_no_node() -> None:
     nodes: list[int] = []
     edges: dict[tuple[int, int], int] = {}
 
-    total, mst = kruskal(nodes, edges)
+    result = kruskal(nodes, edges)
 
-    assert total == 0
-    assert len(mst) == 0
+    assert result.total == 0
+    assert len(result.mst) == 0
