@@ -1,5 +1,6 @@
 import pytest
 from aoc_lib.python.graph.kruskal import kruskal
+from aoc_lib.rust.graph.kruskal import kruskal as kruskal_rust
 
 
 def test_disconnected_graph() -> None:
@@ -42,3 +43,17 @@ def test_no_node() -> None:
 
     assert result.total == 0
     assert len(result.mst) == 0
+
+
+def test_triangle_rust() -> None:
+    n = 3
+    edges = {
+        (1, 2): 1,
+        (2, 0): 2,
+        (0, 1): 3,
+    }
+
+    total, mst = kruskal_rust(n, edges)
+
+    assert total == 3
+    assert len(mst) == 2
