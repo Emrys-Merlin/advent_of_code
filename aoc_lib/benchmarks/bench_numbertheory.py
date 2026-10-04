@@ -1,28 +1,42 @@
+from types import ModuleType
 import pytest
 from pytest_benchmark.fixture import BenchmarkFixture
-import aoc_lib.numbertheory as nt
+
+IMPL_MODULE = "numbertheory"
 
 
-CASES = [
-    (12, 8),
-    (123456789, 987654321),
-    (2**31 - 1, 2**30 + 1),
-]
+CASES = {
+    "small": (12, 8),
+    "medium": (123456789, 987654321),
+    "large": (2**31 - 1, 2**30 + 1),
+}
 
 
-@pytest.mark.parametrize("m,n", CASES)
-def test_gcd_python(
+@pytest.mark.parametrize(
+    "m,n",
+    CASES.values(),
+    ids=CASES.keys(),
+)
+def test_gcd(
     benchmark: BenchmarkFixture,
+    impl: ModuleType,
     m: int,
     n: int,
 ) -> None:
-    benchmark(nt.gcd, m, n)
+    benchmark.group = f"gcd[{m}, {n}]"
+    benchmark(impl.gcd, m, n)  # pyright: ignore[reportAny]
 
 
-@pytest.mark.parametrize("m,n", CASES)
-def test_eea_python(
+@pytest.mark.parametrize(
+    "m,n",
+    CASES.values(),
+    ids=CASES.keys(),
+)
+def test_eea(
     benchmark: BenchmarkFixture,
+    impl: ModuleType,
     m: int,
     n: int,
 ) -> None:
-    benchmark(nt.extended_euclidean_algorithm, m, n)
+    benchmark.group = f"eea[{m}, {n}]"
+    benchmark(impl.extended_euclidean_algorithm, m, n)  # pyright: ignore[reportAny]

@@ -1,17 +1,21 @@
 from itertools import product
+from types import ModuleType
 from pytest_benchmark.fixture import BenchmarkFixture
-from aoc_lib.graph.kruskal import kruskal, integral_kruskal
+
+IMPL_MODULE = "graph.kruskal"
 
 
 def test_kruskal(
     benchmark: BenchmarkFixture,
+    impl: ModuleType,
 ) -> None:
     n = 6
     nodes = list(range(6))
     edges = {(i, j): abs(i - j) for i, j in product(range(n), repeat=2) if i != j}
 
+    benchmark.group = "kruskal"
     benchmark(
-        kruskal,
+        impl.kruskal,  # pyright: ignore[reportAny]
         nodes,
         edges,
     )
@@ -19,12 +23,14 @@ def test_kruskal(
 
 def test_integral_kruskal(
     benchmark: BenchmarkFixture,
+    impl: ModuleType,
 ) -> None:
     n = 6
     edges = {(i, j): abs(i - j) for i, j in product(range(n), repeat=2) if i != j}
 
+    benchmark.group = "integral_kruskal"
     benchmark(
-        integral_kruskal,
+        impl.integral_kruskal,  # pyright: ignore[reportAny]
         n,
         edges,
     )

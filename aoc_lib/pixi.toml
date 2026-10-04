@@ -30,10 +30,19 @@ ruff = "*"
 pytest-benchmark = "*"
 
 [feature.dev.tasks]
-test       = { cmd = "pytest tests/", depends-on = ["develop"] } #
-benchmark =  { cmd = "pytest benchmarks/ --benchmark-only", depends-on = ["develop-r"]}
 develop    = "maturin develop --uv"
 develop-r = "maturin develop --uv --release"
+
+[feature.dev.tasks.benchmark]
+cmd = "pytest {{ target }} --benchmark-only --benchmark-columns=mean,median,ops"
+args = [{arg = "target", default= "benchmarks/"}]
+depends-on = ["develop-r"]
+
+[feature.dev.tasks.test]
+cmd = "pytest {{ target }} --benchmark-only --benchmark-columns=mean,median,ops"
+args = [{arg = "target", default= "tests/"}]
+depends-on = ["develop"]
+
 
 [package]
 name = "aoc-lib"
