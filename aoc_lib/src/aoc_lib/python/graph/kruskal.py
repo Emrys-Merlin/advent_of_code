@@ -1,6 +1,7 @@
 from __future__ import annotations
 from collections.abc import Sequence, Mapping, Hashable
-from dataclasses import dataclass, field
+
+from aoc_lib.interface.graph import Edge, KruskalResult
 
 
 class DUSet:
@@ -37,15 +38,6 @@ class DUSet:
         return True
 
 
-type Edge[T: Hashable] = tuple[T, T]
-
-
-@dataclass(frozen=True)
-class KruskalResult[Node: Hashable]:
-    total: int = 0
-    mst: list[Edge[Node]] = field(default_factory=list)
-
-
 def kruskal[Node: Hashable](
     nodes: Sequence[Node],
     edges: Mapping[Edge[Node], int],
@@ -60,7 +52,7 @@ def kruskal[Node: Hashable](
 
     """
     if len(nodes) <= 1:
-        return KruskalResult()
+        return KruskalResult(0, [])
 
     components = {node: DUSet() for node in nodes}
 
@@ -77,3 +69,10 @@ def kruskal[Node: Hashable](
             return KruskalResult(total_weight, mst)
 
     raise ValueError("The graph is disconnected.")
+
+
+def integral_kruskal(
+    n: int,
+    edges: Mapping[Edge[int], int],
+) -> KruskalResult[int]:
+    return kruskal(list(range(n)), edges)

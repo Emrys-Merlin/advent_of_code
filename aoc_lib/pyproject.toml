@@ -15,7 +15,7 @@ build-backend = "maturin"
 
 [tool.maturin]
 features = ["pyo3/extension-module"]
-module-name = "aoc_lib.rust"  # the Rust extension becomes this submodule
+module-name = "aoc_lib._rust"  # the Rust extension becomes this submodule
 manifest-path = "rust/Cargo.toml"
 python-source = "src"
 

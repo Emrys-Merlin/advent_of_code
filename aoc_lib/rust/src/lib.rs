@@ -4,14 +4,14 @@ mod graph;
 mod numbertheory;
 
 #[pymodule]
-fn rust(_m: &Bound<'_, PyModule>) -> PyResult<()> {
+fn _rust(_m: &Bound<'_, PyModule>) -> PyResult<()> {
     let nt = PyModule::new(_m.py(), "numbertheory")?;
     _m.add_submodule(&nt)?;
     numbertheory::register(&nt)?;
     _m.py()
         .import("sys")?
         .getattr("modules")?
-        .set_item("aoc_lib.rust.numbertheory", &nt)?;
+        .set_item("aoc_lib._rust.numbertheory", &nt)?;
 
     let g = PyModule::new(_m.py(), "graph")?;
     _m.add_submodule(&g)?;
@@ -19,6 +19,6 @@ fn rust(_m: &Bound<'_, PyModule>) -> PyResult<()> {
     _m.py()
         .import("sys")?
         .getattr("modules")?
-        .set_item("aoc_lib.rust.graph", &g)?;
+        .set_item("aoc_lib._rust.graph", &g)?;
     Ok(())
 }

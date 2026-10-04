@@ -1,6 +1,6 @@
 from itertools import product
 from pytest_benchmark.fixture import BenchmarkFixture
-from aoc_lib.graph.kruskal import kruskal
+from aoc_lib.graph.kruskal import kruskal, integral_kruskal
 
 
 def test_kruskal(
@@ -13,5 +13,18 @@ def test_kruskal(
     benchmark(
         kruskal,
         nodes,
+        edges,
+    )
+
+
+def test_integral_kruskal(
+    benchmark: BenchmarkFixture,
+) -> None:
+    n = 6
+    edges = {(i, j): abs(i - j) for i, j in product(range(n), repeat=2) if i != j}
+
+    benchmark(
+        integral_kruskal,
+        n,
         edges,
     )

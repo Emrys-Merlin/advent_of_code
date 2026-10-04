@@ -11,6 +11,6 @@ pub fn register(parent: &Bound<'_, PyModule>) -> PyResult<()> {
         .py()
         .import("sys")?
         .getattr("modules")?
-        .set_item("aoc_lib.rust.graph.kruskal", &m)?;
+        .set_item("aoc_lib._rust.graph.kruskal", &m)?;
     Ok(())
 }
