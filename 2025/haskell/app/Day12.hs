@@ -69,5 +69,5 @@ getFitStatus shapes region
   | too_little_by_area = DoesNotFit
   | otherwise = Undecided
   where
-      enough_by_area = fitByArea (repeat 9) region
+      enough_by_area = fitByArea (repeat 9) region -- all shapes fit into a 3x3 square
       too_little_by_area = not $ fitByArea shapes region
