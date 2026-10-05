@@ -1,0 +1,7 @@
+[language-server.haskell-language-server.config.haskell]
+plugin.ghcide-type-lenses.globalOn = true
+plugin.ghcide-type-lenses.config.mode = "always"
+
+plugin.ghcide-completions.globalOn = true
+plugin.ghcide-hover-and-symbols.globalOn = true
+
