@@ -29,7 +29,12 @@ basedpyright.analysis.diagnosticMode = "openFilesOnly"
 
 [[language]]
 name = "rust"
+language-servers = ["rust-analyzer"]
 auto-format = true
+
+[language-server.rust-analyzer]
+command = "pixi"
+args = ["run", "-e", "dev", "rust-analyzer"]
 
 [language-server.rust-analyzer.config]
 inlayHints.bindingModeHints.enable = false
@@ -38,7 +43,7 @@ inlayHints.closureReturnTypeHints.enable = "with_block"
 inlayHints.discriminantHints.enable = "fieldless"
 inlayHints.lifetimeElisionHints.enable = "skip_trivial"
 inlayHints.typeHints.hideClosureInitialization = false
-cargo.extraEnv = { PATH = ".pixi/envs/default/bin:$PATH" }
+# cargo.extraEnv = { PATH = ".pixi/envs/default/bin:$PATH" }
 
 [language-server.rust-analyzer.config.check]
 command = "clippy"   # use clippy for inline diagnostics instead of cargo check
