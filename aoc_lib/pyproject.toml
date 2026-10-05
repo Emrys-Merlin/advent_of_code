@@ -9,6 +9,9 @@ authors = [
 requires-python = ">=3.13"
 dependencies = []
 
+[project.scripts]
+aoc = "aoc_lib.registry:cli"
+
 [build-system]
 requires = ["maturin>=1.4,<2.0"]
 build-backend = "maturin"
