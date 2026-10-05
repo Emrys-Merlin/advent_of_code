@@ -16,7 +16,10 @@ pub enum KruskalError {
     },
 }
 
-pub fn kruskal(n: usize, mut weighted_edges: Vec<(usize, Edge)>) -> Result<KruskalResult, KruskalError> {
+pub fn kruskal(
+    n: usize,
+    mut weighted_edges: Vec<(usize, Edge)>,
+) -> Result<KruskalResult, KruskalError> {
     weighted_edges.sort_unstable_by_key(|(w, _)| *w);
 
     let mut mst = vec![];
@@ -42,7 +45,7 @@ pub fn kruskal(n: usize, mut weighted_edges: Vec<(usize, Edge)>) -> Result<Krusk
 
     Ok(KruskalResult {
         total: total as i64,
-        mst: mst,
+        mst,
     })
 }
 
