@@ -2,6 +2,7 @@ from collections.abc import Hashable, Mapping, Sequence
 
 from aoc_lib.interface.graph import KruskalResult, Edge
 from aoc_lib._rust.graph.kruskal import kruskal as _kruskal
+from aoc_lib._rust.graph.kruskal import indexed_kruskal
 
 
 def kruskal[Node: Hashable](
@@ -12,8 +13,10 @@ def kruskal[Node: Hashable](
         return KruskalResult(0, [])
 
     index = {node: i for i, node in enumerate(nodes)}
-    total, mst = _kruskal(
-        len(nodes), {(index[u], index[v]): w for (u, v), w in edges.items()}
+    total, mst = indexed_kruskal(
+        len(nodes),
+        index,
+        edges,
     )
 
     return KruskalResult(total, [(nodes[u], nodes[v]) for u, v in mst])
@@ -23,4 +26,4 @@ def integral_kruskal(
     n: int,
     edges: Mapping[Edge[int], int],
 ) -> KruskalResult[int]:
-    return _kruskal(n, edges)
+    return KruskalResult(*_kruskal(n, edges))

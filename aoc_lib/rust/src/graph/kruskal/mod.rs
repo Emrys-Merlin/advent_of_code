@@ -52,7 +52,48 @@ pub fn kruskal(
     Ok((result.total, result.mst))
 }
 
+#[pyfunction]
+pub fn indexed_kruskal(
+    _py: Python<'_>,
+    n: usize,
+    index: &Bound<'_, PyDict>,
+    edges: &Bound<'_, PyMapping>,
+) -> PyResult<(i64, Vec<Edge>)> {
+    let weighted_edges: Vec<(usize, Edge)> = if let Ok(dict) = edges.cast::<PyDict>() {
+        let mut weighted_edges = Vec::with_capacity(dict.len());
+        for (key, value) in dict.iter() {
+            let pair = key.cast::<PyTuple>()?;
+            let u: usize = index.as_any().get_item(pair.get_item(0)?)?.extract()?;
+            let v: usize = index.as_any().get_item(pair.get_item(1)?)?.extract()?;
+            let w = value.extract::<usize>()?;
+            weighted_edges.push((w, (u, v)));
+        }
+        weighted_edges
+    } else {
+        edges
+        .items()?
+        .iter()
+        .map(|item| {
+            let pair = item.cast::<PyTuple>()?;
+            let edge_any = pair.get_item(0)?;
+            let edge = edge_any.cast::<PyTuple>()?;
+            let u: usize = index.as_any().get_item(edge.get_item(0)?)?.extract()?;
+            let v: usize = index.as_any().get_item(edge.get_item(1)?)?.extract()?;
+            let w: usize = pair.get_item(1)?.extract()?;
+
+            Ok((w, (u, v)))
+        })
+        .collect::<PyResult<_>>()?
+    };
+
+    let result = kruskal_inner(n, weighted_edges)?;
+
+    Ok((result.total, result.mst))
+}
+
+
 pub fn register(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(kruskal, m)?)?;
+    m.add_function(wrap_pyfunction!(indexed_kruskal, m)?)?;
     Ok(())
 }
