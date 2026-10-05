@@ -2,3 +2,6 @@
 .pixi
 .pixi/*
 !.pixi/config.toml
+
+# MacOS debug symbols
+*.dSYM/
