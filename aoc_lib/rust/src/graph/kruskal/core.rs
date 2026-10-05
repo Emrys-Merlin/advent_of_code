@@ -1,4 +1,3 @@
-use std::collections::HashMap;
 use thiserror::Error;
 
 pub type Edge = (usize, usize);
@@ -17,26 +16,24 @@ pub enum KruskalError {
     },
 }
 
-pub fn kruskal(n: usize, edges: HashMap<Edge, usize>) -> Result<KruskalResult, KruskalError> {
-    let mut weighted_edges: Vec<(usize, Edge)> = edges
-        .iter()
-        .map(|((u, v), weight)| (*weight, (*u, *v)))
-        .collect();
-
-    weighted_edges.sort_by_key(|(w, _)| *w);
+pub fn kruskal(n: usize, mut weighted_edges: Vec<(usize, Edge)>) -> Result<KruskalResult, KruskalError> {
+    weighted_edges.sort_unstable_by_key(|(w, _)| *w);
 
     let mut mst = vec![];
     let mut du_set = DUSet::new(n);
     let mut total: usize = 0;
 
-    weighted_edges.iter().for_each(|(weight, (u, v))| {
-        if du_set.merge(*u, *v) {
-            total += *weight;
-            mst.push((*u, *v));
+    for (weight, (u, v)) in weighted_edges {
+        if du_set.merge(u, v) {
+            total += weight;
+            mst.push((u, v));
+            if mst.len() == n.saturating_sub(1) {
+                break;
+            }
         }
-    });
+    }
 
-    if !du_set.connected() {
+    if mst.len() != n.saturating_sub(1) {
         return Err(KruskalError::Disconnected {
             node_count: n,
             edge_count: mst.len(),

@@ -5,8 +5,7 @@ use self::core::Edge;
 use self::core::KruskalError;
 use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
-use pyo3::types::{PyMapping, PyTuple};
-use std::collections::HashMap;
+use pyo3::types::{PyDict, PyMapping, PyTuple};
 
 impl From<KruskalError> for PyErr {
     fn from(e: KruskalError) -> Self {
@@ -20,7 +19,18 @@ pub fn kruskal(
     n: usize,
     edges: &Bound<'_, PyMapping>,
 ) -> PyResult<(i64, Vec<Edge>)> {
-    let edges_int: HashMap<Edge, usize> = edges
+    // Check if we actually got a dict (and not some other mapping), because then we can
+    // save a copy.
+    let weighted_edges: Vec<(usize, Edge)> = if let Ok(dict) = edges.cast::<PyDict>() {
+        let mut weighted_edges = Vec::with_capacity(dict.len());
+        for (key, value) in dict.iter() {
+            let (u, v) = key.extract::<(usize, usize)>()?;
+            let w = value.extract::<usize>()?;
+            weighted_edges.push((w, (u, v)));
+        }
+        weighted_edges
+    } else {
+        edges
         .items()?
         .iter()
         .map(|item| {
@@ -31,11 +41,13 @@ pub fn kruskal(
             let v: usize = edge.get_item(1)?.extract()?;
             let w: usize = pair.get_item(1)?.extract()?;
 
-            Ok(((u, v), w))
+            Ok((w, (u, v)))
         })
-        .collect::<PyResult<_>>()?;
+        .collect::<PyResult<_>>()?
+    };
 
-    let result = kruskal_inner(n, edges_int)?;
+
+    let result = kruskal_inner(n, weighted_edges)?;
 
     Ok((result.total, result.mst))
 }
