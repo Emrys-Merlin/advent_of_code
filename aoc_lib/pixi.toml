@@ -39,7 +39,7 @@ args = [{arg = "target", default= "benchmarks/"}]
 depends-on = ["develop-r"]
 
 [feature.dev.tasks.test]
-cmd = "pytest {{ target }} --benchmark-only --benchmark-columns=mean,median,ops"
+cmd = "pytest {{ target }}"
 args = [{arg = "target", default= "tests/"}]
 depends-on = ["develop"]
 
