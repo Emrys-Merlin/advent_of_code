@@ -34,7 +34,7 @@ develop    = "maturin develop --uv"
 develop-r = "maturin develop --uv --release"
 
 [feature.dev.tasks.benchmark]
-cmd = "pytest {{ target }} --benchmark-only --benchmark-columns=mean,median,ops"
+cmd = "pytest {{ target }} --benchmark-only --benchmark-columns=mean,stddev,median,iqr"
 args = [{arg = "target", default= "benchmarks/"}]
 depends-on = ["develop-r"]
 
