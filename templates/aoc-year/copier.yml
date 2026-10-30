@@ -1,0 +1,16 @@
+year:
+  type: int
+  help: Which AoC year?
+
+days:
+  type: int
+  help: Number of puzzles
+  default: "{{ 12 if year >= 2025 else 25 }}"
+
+python_version:
+  type: str
+  help: Python version (latest release this year)
+  default: "3.15"
+
+_subdirectory: .
+_templates_suffix: .jinja
