@@ -1,0 +1,59 @@
+[workspace]
+authors = ["Tim Adler <tim@emrys-merlin.de>"]
+name = "aoc-lib"
+platforms = ["win-64", "linux-64", "osx-64", "osx-arm64", "linux-aarch64"]
+version = "0.1.0"
+channels = [
+  "https://prefix.dev/pixi-build-backends",
+  "https://prefix.dev/conda-forge",
+]
+preview = ["pixi-build"]
+
+[environments]
+dev = { features = ["dev"], solve-group = "default" }
+
+[dependencies]
+# aoc-lib = { path = "." }
+python = ">=3.13"
+rust = ">=1.80"
+
+[tasks]
+# build      = "maturin build --release"
+# publish    = "maturin publish"
+
+[feature.dev.dependencies]
+maturin = ">=1.4,<2"
+uv = "*"  # maturin needs uv or pip
+pytest = "*"
+basedpyright = "*"
+ruff = "*"
+pytest-benchmark = "*"
+
+[feature.dev.tasks]
+develop    = "maturin develop --uv"
+develop-r = "maturin develop --uv --release"
+
+[feature.dev.tasks.benchmark]
+cmd = "pytest {{ target }} --benchmark-only --benchmark-columns=mean,stddev,median,iqr"
+args = [{arg = "target", default= "benchmarks/"}]
+depends-on = ["develop-r"]
+
+[feature.dev.tasks.test]
+cmd = "pytest {{ target }}"
+args = [{arg = "target", default= "tests/"}]
+depends-on = ["develop"]
+
+
+[package]
+name = "aoc-lib"
+version= "0.1.0"
+
+[package.build]
+backend = { name = "pixi-build-python", version = "*" }
+
+[package.host-dependencies]
+maturin = ">=1.4,<2"
+python = ">=3.13"
+
+[package.run-dependencies]
+python = ">=3.13"
