@@ -1,0 +1,16 @@
+[[language]]
+name = "python"
+language-servers = ["ty", "ruff"]
+auto-format = true
+formatter = { command = "pixi", args = ["run", "ruff", "format", "-"]}
+
+[language-server.ty]
+command = "pixi"
+args = ["run", "ty", "server"]
+
+[language-server.ty.config]
+experimental.useUv = "scripts"
+
+[language-server.ruff]
+command = "pixi"
+args = ["run", "ruf", "server"]
