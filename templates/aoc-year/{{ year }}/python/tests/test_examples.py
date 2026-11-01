@@ -9,4 +9,4 @@ def test_example(
     content: str,
     solution: str,
 ) -> None:
-    solver(content) == solution
+    assert solver(content) == solution

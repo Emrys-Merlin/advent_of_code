@@ -1,13 +1,11 @@
-import tomllib
-
 import pytest
 
-import aoc{{ year }}
+import aoc{{ year }}  # noqa: F401, needed for side effects
 from aoc_lib.registry import solvers, load_answers, load_content
 
 
 def pytest_generate_tests(metafunc: pytest.Metafunc) -> None:
-    if not "solver" in metafunc.fixturenames:
+    if "solver" not in metafunc.fixturenames:
         return
 
     answers = load_answers()
@@ -22,7 +20,7 @@ def pytest_generate_tests(metafunc: pytest.Metafunc) -> None:
                     solver,
                     "",
                     "",
-                    id=f"day{day:02d}-task{task}-ex1",
+                    id=f"day{day:02d}-task{task}-ex01",
                     marks=pytest.mark.skip(
                         reason="expected value missing in answers.toml"
                     ),
@@ -38,9 +36,9 @@ def pytest_generate_tests(metafunc: pytest.Metafunc) -> None:
                 params.append(
                     pytest.param(
                         solver,
-                        content,
                         "",
-                        id=f"day{day:02d}-task{task}-ex1",
+                        "",
+                        id=f"day{day:02d}-task{task}-ex{example:02d}",
                         marks=pytest.mark.skip(
                             reason=f"Could not find example file {example} for day {day}"
                         ),
