@@ -5,9 +5,11 @@ import os
 import platform
 import sys
 import tomllib
+from collections.abc import Mapping
 from math import sqrt
 from pathlib import Path
 from time import get_clock_info, perf_counter_ns
+from types import MappingProxyType
 from typing import Callable, Literal, Protocol, cast
 
 
@@ -116,8 +118,8 @@ def load_content(
         return f.read()
 
 
-def solvers() -> dict[tuple[int, int], Solver]:
-    return _solver_registry
+def solvers() -> Mapping[tuple[int, int], Solver]:
+    return MappingProxyType(_solver_registry)
 
 
 def _set_base_path(solver: Solver) -> None:
