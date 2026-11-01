@@ -1,11 +1,12 @@
 import argparse
 import importlib.metadata
 import inspect
-from math import sqrt
 import os
-from pathlib import Path
 import platform
 import sys
+import tomllib
+from math import sqrt
+from pathlib import Path
 from time import get_clock_info, perf_counter_ns
 from typing import Callable, Literal, Protocol, cast
 
@@ -21,6 +22,8 @@ class Solver(Protocol):
 _solver_registry: dict[tuple[int, int], Solver] = {}
 _raw_path = os.getenv("AOC_BASE_PATH")
 _base_path = Path(_raw_path) if _raw_path else None
+
+ANSWERS_FN = "answers.toml"
 
 _TIME_W = 19  # Width of a cell in the output
 
@@ -78,7 +81,7 @@ def cli() -> None:
 
     for day in days:
         try:
-            content = _load_content(day, example)
+            content = load_content(day, example)
         except FileNotFoundError as e:
             print(_row(f"{day:02d}", "", "" if time else None, str(e)))
             continue
@@ -89,7 +92,15 @@ def cli() -> None:
             print(line)
 
 
-def _load_content(
+def load_answers() -> dict[str, dict[Literal["task1", "task2"], dict[str, str]]]:
+    if _base_path is None:
+        raise FileNotFoundError("Base path not set.")
+
+    fn = _base_path / "examples" / ANSWERS_FN
+    return tomllib.loads(fn.read_text())
+
+
+def load_content(
     day: int,
     example: int,
 ) -> str:
@@ -103,6 +114,10 @@ def _load_content(
 
     with open(fn) as f:
         return f.read()
+
+
+def solvers() -> dict[tuple[int, int], Solver]:
+    return _solver_registry
 
 
 def _set_base_path(solver: Solver) -> None:
