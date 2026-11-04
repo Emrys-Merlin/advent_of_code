@@ -1,0 +1,58 @@
+import pytest
+from aoc_lib.registry import solvers, load_answers, load_content
+
+import aoc2026  # noqa: F401, needed for side effects
+
+
+def pytest_generate_tests(metafunc: pytest.Metafunc) -> None:
+    if "solver" not in metafunc.fixturenames:
+        return
+
+    answers = load_answers()
+
+    params = []
+    for (day, task), solver in solvers().items():
+        examples = answers.get(f"day{day:02d}", {}).get(f"task{task}", {})
+
+        if not examples:
+            params.append(
+                pytest.param(
+                    solver,
+                    "",
+                    "",
+                    id=f"day{day:02d}-task{task}-ex01",
+                    marks=pytest.mark.skip(
+                        reason="expected value missing in answers.toml"
+                    ),
+                )
+            )
+            continue
+
+        for example_str, solution in examples.items():
+            example = int(example_str)
+            try:
+                content = load_content(day, example)
+            except FileNotFoundError:
+                params.append(
+                    pytest.param(
+                        solver,
+                        "",
+                        "",
+                        id=f"day{day:02d}-task{task}-ex{example:02d}",
+                        marks=pytest.mark.skip(
+                            reason=f"Could not find example file {example} for day {day}"
+                        ),
+                    )
+                )
+                continue
+
+            params.append(
+                pytest.param(
+                    solver,
+                    content,
+                    solution,
+                    id=f"day{day:02d}-task{task}-ex{example:02d}",
+                )
+            )
+
+    metafunc.parametrize("solver,content,solution", params)
