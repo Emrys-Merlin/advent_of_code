@@ -12,5 +12,5 @@ python_version:
   help: Python version (latest release this year)
   default: "3.15"
 
-_subdirectory: .
+_subdirectory: templates/aoc-year
 _templates_suffix: .jinja

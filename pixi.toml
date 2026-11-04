@@ -7,8 +7,11 @@ version = "0.1.0"
 
 [tasks.init]
 args = ["year", "python"]
-cmd = "copier copy --trust templates/aoc-year . --data year={{ year }} --data python_version={{ python }}"
+cmd = "copier copy --trust --vcs-ref HEAD . {{ year }} --data year={{ year }} --data python_version={{ python }}"
 
+[tasks.update]
+args = ["year"]
+cmd = "copier update --trust --vcs-ref HEAD {{ year }}"
 
 [dependencies]
 copier = ">=9.7"
