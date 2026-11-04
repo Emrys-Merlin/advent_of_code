@@ -1,0 +1,23 @@
+{%- set py = "[-](./python/src/aoc%d/task%02d.py)" -%}
+# My solutions for Advent of Code {{ year }}
+
+<!-- What's special about this year? -->
+
+## Solutions
+
+{% for row in range(1, days + 1) | batch(13) %}
+| Day |{% for d in row %} {{ '%02d' % d }} |{% endfor %}
+| --- |{% for d in row %} -- |{% endfor %}
+| Task 01 |{% for d in row %} {{ py | format(year, d) }} |{% endfor %}
+| Task 02 |{% for d in row %} {{ py | format(year, d) }} |{% endfor %}
+{% endfor %}
+
+The python icon is licensed under the GPL and can be found [here](https://en.m.wikipedia.org/wiki/File:Python-logo-notext.svg).
+
+## Structure
+
+- [`examples`](./examples) contains the examples as separate files. The file names follow the format `day{day:02d}_{counter:02d}.txt`
+- [`inputs`](./inputs) the same for the inputs, but without the counter, i.e., `day{day:02d}.txt`.
+- The other directories are named after a programming language and contain the solutions to AoC in that programming language. This year, there is at least a [`python`](./python) directory. The READMEs in each directory tell you how to run the solutions.
+
+[python]: https://upload.wikimedia.org/wikipedia/commons/c/c3/Python-logo-notext.svg

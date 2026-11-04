@@ -1,0 +1,16 @@
+"""Importing the package registers every solver via its decorator."""
+
+from aoc_lib.registry import cli
+
+from . import (
+{%- for day in range(1, days + 1) %}
+    task{{ '%02d' % day }},
+{%- endfor %}
+)
+
+__all__ = [
+    "cli",
+{%- for day in range(1, days + 1) %}
+    "task{{ '%02d' % day }}",
+{%- endfor %}
+]

@@ -1,0 +1,17 @@
+[workspace]
+authors = ["Tim Adler <tim@emrys-merlin.de>"]
+channels = ["conda-forge"]
+name = "advent_of_code"
+platforms = ["linux-64", "osx-arm64"]
+version = "0.1.0"
+
+[tasks.init]
+args = ["year", "python"]
+cmd = "copier copy --trust --vcs-ref HEAD . {{ year }} --data year={{ year }} --data python_version={{ python }}"
+
+[tasks.update]
+args = ["year"]
+cmd = "copier update --trust --vcs-ref HEAD {{ year }}"
+
+[dependencies]
+copier = ">=9.7"
