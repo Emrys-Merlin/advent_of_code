@@ -13,4 +13,4 @@ experimental.useUv = "scripts"
 
 [language-server.ruff]
 command = "pixi"
-args = ["run", "ruf", "server"]
+args = ["run", "ruff", "server"]

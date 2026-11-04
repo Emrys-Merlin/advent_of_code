@@ -1,7 +1,7 @@
 import pytest
+from aoc_lib.registry import solvers, load_answers, load_content
 
 import aoc{{ year }}  # noqa: F401, needed for side effects
-from aoc_lib.registry import solvers, load_answers, load_content
 
 
 def pytest_generate_tests(metafunc: pytest.Metafunc) -> None:
