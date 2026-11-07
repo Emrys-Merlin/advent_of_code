@@ -20,6 +20,9 @@ class Interval:
     def from_closed(cls, lo: int, hi: int) -> Self:
         return cls(lo, hi + 1)
 
+    def to_tuple(self) -> tuple[int, int]:
+        return (self.lo, self.hi)
+
     def __len__(self) -> int:
         return self.hi - self.lo
 
@@ -38,24 +41,18 @@ class Interval:
                 f"Intervals are only comparable to intervals, but received {type(x)}."
             )
 
-        if self.lo < x.lo:
-            return True
-
-        if self.lo > x.lo:
-            return False
-
-        return self.hi <= x.hi
+        return self.to_tuple() <= x.to_tuple()
 
     @override
     def __eq__(self, x: object) -> bool:
         if not isinstance(x, Interval):
             return False
 
-        return (x.lo == self.lo) and (x.hi == self.hi)
+        return self.to_tuple() == x.to_tuple()
 
     @override
     def __hash__(self) -> int:
-        return hash((self.lo, self.hi))
+        return hash(self.to_tuple())
 
     @override
     def __str__(self) -> str:
