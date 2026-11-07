@@ -25,6 +25,8 @@ python-source = "src"
 [tool.pyright]
 pythonVersion = "3.13"
 reportMissingModuleSource = "none"
+venvPath = ".pixi/envs"
+venv = "dev"
 
 [[tool.pyright.executionEnvironments]]
 root = "benchmarks"
