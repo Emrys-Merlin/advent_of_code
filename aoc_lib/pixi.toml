@@ -28,6 +28,7 @@ pytest = "*"
 basedpyright = "*"
 ruff = "*"
 pytest-benchmark = "*"
+rust-src = "==1.94.0"
 
 [feature.dev.tasks]
 develop    = "maturin develop --uv"

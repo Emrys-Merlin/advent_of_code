@@ -1,13 +1,10 @@
 from collections.abc import Iterable
-from functools import total_ordering
-from typing import TYPE_CHECKING, Self, final, override
+from typing import Self, final, override
 
-if TYPE_CHECKING:
-    from aoc_lib.interface.interval import AbstractInterval
+from aoc_lib.interface.interval import AbstractInterval
 
 
 @final
-@total_ordering
 class Interval:
     def __init__(self, lo: int, hi: int) -> None:
         if hi < lo:
@@ -27,21 +24,18 @@ class Interval:
         return self.hi - self.lo
 
     def __contains__(self, x: object) -> bool:
-        if isinstance(x, int):
-            return self.lo <= x < self.hi
+        match x:
+            case int():
+                return self.lo <= x < self.hi
+            case Interval(lo=lo, hi=hi):
+                return (self.lo <= lo) and (hi <= self.hi)
+            case AbstractInterval(lo=lo, hi=hi):
+                return (self.lo <= lo) and (hi <= self.hi)
+            case _:
+                return False
 
-        if isinstance(x, Interval):
-            return (self.lo <= x.lo) and (x.hi <= self.hi)
-
-        return False
-
-    def __le__(self, x: object) -> bool:
-        if not isinstance(x, Interval):
-            raise NotImplementedError(
-                f"Intervals are only comparable to intervals, but received {type(x)}."
-            )
-
-        return self.to_tuple() <= x.to_tuple()
+    def __lt__(self, x: Self, /) -> bool:
+        return self.to_tuple() < x.to_tuple()
 
     @override
     def __eq__(self, x: object) -> bool:

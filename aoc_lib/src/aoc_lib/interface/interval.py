@@ -1,12 +1,21 @@
-from collections.abc import Iterable
-from functools import total_ordering
-from typing import Protocol, Self, override
+from collections.abc import Hashable, Iterable, Sized
+from typing import Protocol, Self, runtime_checkable
 
 
-@total_ordering
-class AbstractInterval(Protocol):
-    lo: int
-    hi: int
+class Sortable(Protocol):
+    def __lt__(self, other: Self, /) -> bool:
+        ...
+
+
+@runtime_checkable
+class AbstractInterval(Hashable, Sized, Sortable, Protocol):
+    @property
+    def lo(self) -> int:
+        ...
+
+    @property
+    def hi(self) -> int:
+        ...
 
     def __init__(self, lo: int, hi: int) -> None:
         ...
@@ -15,21 +24,7 @@ class AbstractInterval(Protocol):
     def from_closed(cls, lo: int, hi: int) -> Self:
         ...
 
-    def __len__(self) -> int:
-        ...
-
     def __contains__(self, x: object) -> bool:
-        ...
-
-    def __le__(self, x: object) -> bool:
-        ...
-
-    @override
-    def __eq__(self, x: object) -> bool:
-        ...
-
-    @override
-    def __hash__(self) -> int:
         ...
 
 
