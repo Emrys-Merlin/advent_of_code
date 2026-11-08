@@ -11,6 +11,7 @@ dependencies = []
 
 [project.scripts]
 aoc = "aoc_lib.registry:cli"
+aoc-helper = "aoc_lib.cli:cli"
 
 [build-system]
 requires = ["maturin>=1.4,<2.0"]
