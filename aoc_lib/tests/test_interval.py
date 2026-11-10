@@ -1,10 +1,11 @@
 from types import ModuleType
 from typing import cast
-from aoc_lib.interface.interval import AbstractInterval
+
 import pytest
 
-from aoc_lib.python.interval import merge_intervals
+from aoc_lib.interface.interval import AbstractInterval
 from aoc_lib.python.interval import Interval as PythonInterval
+from aoc_lib.python.interval import merge_intervals
 from aoc_lib.rust.interval import Interval as RustInterval
 
 IMPL_MODULE = "interval"
@@ -59,7 +60,7 @@ def test_sub_interval(
     assert Interval(-1, 2) not in interval
     assert Interval(5, 8) not in interval
     assert Interval(8, 9) not in interval
-    assert interval in interval
+    assert interval in interval  # noqa: PLR0124
 
 
 def test_lt(
