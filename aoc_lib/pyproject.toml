@@ -1,6 +1,6 @@
 [project]
 name = "aoc-lib"
-version = "0.1.0"
+version = "0.2.0"
 description = "Add your description here"
 readme = "README.md"
 authors = [
@@ -25,6 +25,8 @@ python-source = "src"
 [tool.pyright]
 pythonVersion = "3.13"
 reportMissingModuleSource = "none"
+venvPath = ".pixi/envs"
+venv = "dev"
 
 [[tool.pyright.executionEnvironments]]
 root = "benchmarks"
